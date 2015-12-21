@@ -1,0 +1,1 @@
+{"sceneName":"MainScene","composite":{"sImages":[{"uniqueId":2,"itemIdentifier":"player","tags":[],"x":8.81,"y":5.44,"originX":4,"originY":4,"layerName":"Default","imageName":"badlogic"}],"layers":[{"layerName":"Default","isVisible":true}]},"physicsPropertiesVO":{},"verticalGuides":[0,25],"horizontalGuides":[18.75,0]}
