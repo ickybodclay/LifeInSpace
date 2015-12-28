@@ -17,8 +17,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
     private Stage stage;
-    private Table table;
+
+    private Label.LabelStyle labelStyle;
+    private TextButton.TextButtonStyle buttonStyle;
+
+    private Table mainTable;
     private Label chargeLabel;
+
+    private Table buildTable;
 
     private AssetManager assetManager;
     private String spriteAtlasFileName = "sprites.atlas";
@@ -42,19 +48,19 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     }
 
     private void setupUI() {
-        table = new Table();
-        table.setFillParent(true);
-        //table.setDebug(true);
-        stage.addActor(table);
+        mainTable = new Table();
+        mainTable.setFillParent(true);
+        //mainTable.setDebug(true);
+        stage.addActor(mainTable);
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.GOLD;
         chargeLabel = new Label("Charge = 0", labelStyle);
-        table.add(chargeLabel);
-        table.row();
+        mainTable.add(chargeLabel);
+        mainTable.row();
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = new BitmapFont();
         buttonStyle.fontColor = Color.WHITE;
         buttonStyle.overFontColor = Color.YELLOW;
@@ -73,18 +79,34 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             }
         });
 
-        table.add(chargeButton);
-        table.row();
+        mainTable.add(chargeButton);
+        mainTable.row();
 
-        TextButton buildButton = new TextButton("Build", buttonStyle);
+        final TextButton buildButton = new TextButton("Build", buttonStyle);
         buildButton.pad(10);
         buildButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                mainTable.setVisible(false);
+                buildTable.setVisible(true);
                 return false;
             }
         });
-        buildButton.setDisabled(true);
-        table.add(buildButton);
+        mainTable.add(buildButton);
+
+        buildTable = new Table();
+        buildTable.setFillParent(true);
+        buildTable.setVisible(false);
+        stage.addActor(buildTable);
+        TextButton backButton = new TextButton("Back", buttonStyle);
+        backButton.pad(10);
+        backButton.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                mainTable.setVisible(true);
+                buildTable.setVisible(false);
+                return false;
+            }
+        });
+        buildTable.add(backButton);
     }
 
     @Override
