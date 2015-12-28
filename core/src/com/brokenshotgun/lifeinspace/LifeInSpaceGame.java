@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
@@ -39,7 +39,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         //table.setDebug(true);
 
-        ImageTextButton.ImageTextButtonStyle style = new ImageTextButton.ImageTextButtonStyle();
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = new BitmapFont();
         style.fontColor = Color.WHITE;
         style.overFontColor = Color.BLUE;
@@ -47,7 +47,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         style.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
         style.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
 
-        ImageTextButton testButton = new ImageTextButton("Test", style);
+        TextButton testButton = new TextButton("Test Test Test", style);
         testButton.pad(10);
         testButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -75,5 +75,6 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+        spriteAtlas.dispose();
     }
 }
