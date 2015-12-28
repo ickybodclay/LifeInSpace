@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -17,10 +18,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 public class LifeInSpaceGame extends ApplicationAdapter {
     private Stage stage;
     private Table table;
+    private Label chargeLabel;
 
     private AssetManager assetManager;
     private String spriteAtlasFileName = "sprites.atlas";
     private TextureAtlas spriteAtlas;
+    private StateManager stateManager;
 
     @Override
     public void create() {
@@ -30,33 +33,58 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         spriteAtlas = assetManager.get(spriteAtlasFileName);
 
+        stateManager = new StateManager();
+
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
+        setupUI();
+    }
+
+    private void setupUI() {
         table = new Table();
         table.setFillParent(true);
+        //table.setDebug(true);
         stage.addActor(table);
 
-        //table.setDebug(true);
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new BitmapFont();
+        labelStyle.fontColor = Color.GOLD;
+        chargeLabel = new Label("Charge = 0", labelStyle);
+        table.add(chargeLabel);
+        table.row();
 
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = new BitmapFont();
-        style.fontColor = Color.WHITE;
-        style.overFontColor = Color.BLUE;
-        style.downFontColor = Color.DARK_GRAY;
-        style.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
-        style.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = new BitmapFont();
+        buttonStyle.fontColor = Color.WHITE;
+        buttonStyle.overFontColor = Color.YELLOW;
+        buttonStyle.downFontColor = Color.DARK_GRAY;
+        buttonStyle.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        buttonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
+        buttonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
-        TextButton testButton = new TextButton("Test Test Test", style);
-        testButton.pad(10);
-        testButton.addListener(new InputListener() {
+        TextButton chargeButton = new TextButton("Charge", buttonStyle);
+        chargeButton.pad(10);
+        chargeButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("touchDown 1");
+                stateManager.addCharge(1);
+                chargeLabel.setText("Charge = " + stateManager.getCharge());
                 return false;
             }
         });
 
-        table.add(testButton);
+        table.add(chargeButton);
+        table.row();
+
+        TextButton buildButton = new TextButton("Build", buttonStyle);
+        buildButton.pad(10);
+        buildButton.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return false;
+            }
+        });
+        buildButton.setDisabled(true);
+        table.add(buildButton);
     }
 
     @Override

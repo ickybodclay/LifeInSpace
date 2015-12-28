@@ -4,7 +4,7 @@ size: 128,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-button_normal
+button_disabled
   rotate: false
   xy: 2, 2
   size: 30, 30
@@ -12,9 +12,17 @@ button_normal
   orig: 30, 30
   offset: 0, 0
   index: -1
-button_pressed
+button_normal
   rotate: false
   xy: 34, 2
+  size: 30, 30
+  split: 3, 3, 3, 15
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+button_pressed
+  rotate: false
+  xy: 66, 2
   size: 30, 30
   split: 3, 3, 3, 15
   orig: 30, 30
