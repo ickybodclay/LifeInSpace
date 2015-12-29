@@ -83,7 +83,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             }
         });
 
-        mainTable.add(chargeButton);
+        mainTable.add(chargeButton).expand();
         mainTable.row();
 
         final TextButton buildButton = new TextButton("Build", buttonStyle);
@@ -95,7 +95,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
                 return false;
             }
         });
-        mainTable.add(buildButton);
+        mainTable.add(buildButton).expand();
 
         buildTable = new Table();
         buildTable.setFillParent(true);
