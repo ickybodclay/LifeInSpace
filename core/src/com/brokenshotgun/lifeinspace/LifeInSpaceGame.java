@@ -11,8 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
@@ -97,6 +100,20 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildTable.setFillParent(true);
         buildTable.setVisible(false);
         stage.addActor(buildTable);
+
+        List.ListStyle listStyle = new List.ListStyle();
+        listStyle.font = new BitmapFont();
+        listStyle.fontColorUnselected = Color.WHITE;
+        listStyle.fontColorSelected = Color.YELLOW;
+        listStyle.selection =  new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        List<String> buildList = new List<String>(listStyle);
+        buildList.setFillParent(true);
+        buildList.setItems("beep", "boop", "farts");
+        ScrollPane scrollPane = new ScrollPane(buildList);
+        buildTable.add(scrollPane);
+
+        buildTable.row();
+
         TextButton backButton = new TextButton("Back", buttonStyle);
         backButton.pad(10);
         backButton.addListener(new InputListener() {
