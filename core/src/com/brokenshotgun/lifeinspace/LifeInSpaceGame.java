@@ -10,12 +10,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
@@ -105,14 +106,25 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         listStyle.font = new BitmapFont();
         listStyle.fontColorUnselected = Color.WHITE;
         listStyle.fontColorSelected = Color.YELLOW;
-        listStyle.selection =  new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
-        List<String> buildList = new List<String>(listStyle);
-        buildList.setFillParent(true);
-        buildList.setItems("beep", "boop", "farts");
+        listStyle.selection = new NinePatchDrawable(spriteAtlas.createPatch("button_normal")); // new BaseDrawable();
+        listStyle.selection.setLeftWidth(10f);
+        listStyle.selection.setTopHeight(10f);
+        //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        final List<String> buildList = new List<String>(listStyle);
+        buildList.setItems("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
         ScrollPane scrollPane = new ScrollPane(buildList);
-        buildTable.add(scrollPane);
+        buildTable.add(scrollPane).expand().fill().pad(10);
 
         buildTable.row();
+
+        TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
+        buildConfirmButton.pad(10);
+        buildConfirmButton.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("Build", "building " + buildList.getSelected());
+                return false;
+            }
+        });
 
         TextButton backButton = new TextButton("Back", buttonStyle);
         backButton.pad(10);
@@ -123,7 +135,13 @@ public class LifeInSpaceGame extends ApplicationAdapter {
                 return false;
             }
         });
-        buildTable.add(backButton);
+        HorizontalGroup buildButtonGroup = new HorizontalGroup();
+        buildButtonGroup.space(100f);
+        buildButtonGroup.padTop(10f);
+        buildButtonGroup.padBottom(10f);
+        buildButtonGroup.addActor(buildConfirmButton);
+        buildButtonGroup.addActor(backButton);
+        buildTable.add(buildButtonGroup);
     }
 
     @Override
