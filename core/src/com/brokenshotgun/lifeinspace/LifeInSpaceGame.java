@@ -24,20 +24,21 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
     private Label.LabelStyle labelStyle;
     private TextButton.TextButtonStyle buttonStyle;
+    private List.ListStyle listStyle;
+    private ScrollPane.ScrollPaneStyle scrollStyle;
 
     private Table mainTable;
     private Label chargeLabel;
-
     private Table buildTable;
 
     private AssetManager assetManager;
 
-    private String spriteAtlasFile = "sprites.atlas";
+    private final String spriteAtlasFile = "sprites.atlas";
     private TextureAtlas spriteAtlas;
     private StateManager stateManager;
 
-    private String btnPressSfxFile = "sfx/button_press.wav";
-    private String btnErrorSfxFile = "sfx/button_error.wav";
+    private final String btnPressSfxFile = "sfx/button_press.wav";
+    private final String btnErrorSfxFile = "sfx/button_error.wav";
     private Sound btnPressSfx;
     private Sound btnErrorSfx;
 
@@ -62,17 +63,15 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     }
 
     private void setupUI() {
-        mainTable = new Table();
-        mainTable.setFillParent(true);
-        //mainTable.setDebug(true);
-        stage.addActor(mainTable);
+        SetupStyles();
+        SetupMainScreen();
+        SetupBuildScreen();
+    }
 
+    private void SetupStyles() {
         labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.GOLD;
-        chargeLabel = new Label("Charge = 0", labelStyle);
-        mainTable.add(chargeLabel);
-        mainTable.row();
 
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = new BitmapFont();
@@ -82,6 +81,29 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buttonStyle.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
         buttonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
         buttonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+
+        listStyle = new List.ListStyle();
+        listStyle.font = new BitmapFont();
+        listStyle.fontColorUnselected = Color.WHITE;
+        listStyle.fontColorSelected = Color.YELLOW;
+        listStyle.selection = new NinePatchDrawable(spriteAtlas.createPatch("button_normal")); // new BaseDrawable();
+        listStyle.selection.setLeftWidth(10f);
+        listStyle.selection.setTopHeight(10f);
+        //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+
+        scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+    }
+
+    private void SetupMainScreen() {
+        mainTable = new Table();
+        mainTable.setFillParent(true);
+        //mainTable.setDebug(true);
+        stage.addActor(mainTable);
+
+        chargeLabel = new Label("Charge = 0", labelStyle);
+        mainTable.add(chargeLabel);
+        mainTable.row();
 
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
@@ -108,25 +130,17 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             }
         });
         mainTable.add(buildButton).expand();
+    }
 
+    private void SetupBuildScreen() {
         buildTable = new Table();
         buildTable.setFillParent(true);
         buildTable.setVisible(false);
         stage.addActor(buildTable);
 
-        List.ListStyle listStyle = new List.ListStyle();
-        listStyle.font = new BitmapFont();
-        listStyle.fontColorUnselected = Color.WHITE;
-        listStyle.fontColorSelected = Color.YELLOW;
-        listStyle.selection = new NinePatchDrawable(spriteAtlas.createPatch("button_normal")); // new BaseDrawable();
-        listStyle.selection.setLeftWidth(10f);
-        listStyle.selection.setTopHeight(10f);
-        //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
         final List<String> buildList = new List<String>(listStyle);
         buildList.setItems("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
 
-        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
-        scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
 
         buildTable.add(scrollPane).expand().fill().pad(10);
