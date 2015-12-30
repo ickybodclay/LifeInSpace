@@ -178,6 +178,6 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         stage.dispose();
-        spriteAtlas.dispose();
+        assetManager.dispose();
     }
 }
