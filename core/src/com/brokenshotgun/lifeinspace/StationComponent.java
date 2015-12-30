@@ -25,4 +25,11 @@ public class StationComponent {
     public int getResourceCost() {
         return resourceCost;
     }
+
+    @Override
+    public String toString() {
+        return name +
+            " resource cost=" + resourceCost +
+            ", energy cost=" + energyCost + " charge per cycle";
+    }
 }

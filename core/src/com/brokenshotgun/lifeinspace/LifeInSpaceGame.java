@@ -3,6 +3,7 @@ package com.brokenshotgun.lifeinspace;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -31,17 +31,27 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     private Table buildTable;
 
     private AssetManager assetManager;
-    private String spriteAtlasFileName = "sprites.atlas";
+
+    private String spriteAtlasFile = "sprites.atlas";
     private TextureAtlas spriteAtlas;
     private StateManager stateManager;
+
+    private String btnPressSfxFile = "sfx/button_press.wav";
+    private String btnErrorSfxFile = "sfx/button_error.wav";
+    private Sound btnPressSfx;
+    private Sound btnErrorSfx;
 
     @Override
     public void create() {
         assetManager = new AssetManager();
-        assetManager.load(spriteAtlasFileName, TextureAtlas.class);
+        assetManager.load(spriteAtlasFile, TextureAtlas.class);
+        assetManager.load(btnPressSfxFile, Sound.class);
+        assetManager.load(btnErrorSfxFile, Sound.class);
         assetManager.finishLoading();
 
-        spriteAtlas = assetManager.get(spriteAtlasFileName);
+        spriteAtlas = assetManager.get(spriteAtlasFile);
+        btnPressSfx = assetManager.get(btnPressSfxFile);
+        btnErrorSfx = assetManager.get(btnErrorSfxFile);
 
         stateManager = new StateManager();
 
@@ -79,6 +89,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 stateManager.addCharge(1);
                 chargeLabel.setText("Charge = " + stateManager.getCharge());
+                btnPressSfx.play();
                 return false;
             }
         });
@@ -92,6 +103,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 mainTable.setVisible(false);
                 buildTable.setVisible(true);
+                btnPressSfx.play();
                 return false;
             }
         });
@@ -112,7 +124,11 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
         final List<String> buildList = new List<String>(listStyle);
         buildList.setItems("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
-        ScrollPane scrollPane = new ScrollPane(buildList);
+
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+        ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
+
         buildTable.add(scrollPane).expand().fill().pad(10);
 
         buildTable.row();
@@ -122,6 +138,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildConfirmButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log("Build", "building " + buildList.getSelected());
+                btnPressSfx.play();
                 return false;
             }
         });
@@ -132,6 +149,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 mainTable.setVisible(true);
                 buildTable.setVisible(false);
+                btnErrorSfx.play();
                 return false;
             }
         });
