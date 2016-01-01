@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Array;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
     private Stage stage;
@@ -39,8 +40,12 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
     private final String btnPressSfxFile = "sfx/button_press.wav";
     private final String btnErrorSfxFile = "sfx/button_error.wav";
+    private final String btnBackSfxFile = "sfx/button_back.wav";
     private Sound btnPressSfx;
     private Sound btnErrorSfx;
+    private Sound btnBackSfx;
+
+    private Array<StationComponent> componentArray;
 
     @Override
     public void create() {
@@ -48,11 +53,13 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         assetManager.load(spriteAtlasFile, TextureAtlas.class);
         assetManager.load(btnPressSfxFile, Sound.class);
         assetManager.load(btnErrorSfxFile, Sound.class);
+        assetManager.load(btnBackSfxFile, Sound.class);
         assetManager.finishLoading();
 
         spriteAtlas = assetManager.get(spriteAtlasFile);
         btnPressSfx = assetManager.get(btnPressSfxFile);
         btnErrorSfx = assetManager.get(btnErrorSfxFile);
+        btnBackSfx = assetManager.get(btnBackSfxFile);
 
         stateManager = new StateManager();
 
@@ -63,6 +70,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     }
 
     private void setupUI() {
+        SetupComponents();
         SetupStyles();
         SetupMainScreen();
         SetupBuildScreen();
@@ -109,7 +117,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         chargeButton.pad(10);
         chargeButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                stateManager.addCharge(1);
+                stateManager.addCharge();
                 chargeLabel.setText("Charge = " + stateManager.getCharge());
                 btnPressSfx.play();
                 return false;
@@ -138,11 +146,10 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildTable.setVisible(false);
         stage.addActor(buildTable);
 
-        final List<String> buildList = new List<String>(listStyle);
-        buildList.setItems("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+        final List<StationComponent> buildList = new List<StationComponent>(listStyle);
+        buildList.setItems(componentArray);
 
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
-
         buildTable.add(scrollPane).expand().fill().pad(10);
 
         buildTable.row();
@@ -151,8 +158,14 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildConfirmButton.pad(10);
         buildConfirmButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("Build", "building " + buildList.getSelected());
-                btnPressSfx.play();
+                if (stateManager.has(buildList.getSelected())) {
+                    btnErrorSfx.play();
+                }
+                else {
+                    Gdx.app.log("Build", "building " + buildList.getSelected());
+                    stateManager.add(buildList.getSelected());
+                    btnPressSfx.play();
+                }
                 return false;
             }
         });
@@ -163,7 +176,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 mainTable.setVisible(true);
                 buildTable.setVisible(false);
-                btnErrorSfx.play();
+                btnBackSfx.play();
                 return false;
             }
         });
@@ -176,10 +189,38 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildTable.add(buildButtonGroup);
     }
 
+    private void SetupComponents() {
+        componentArray = new Array<StationComponent>();
+        componentArray.add(new StationComponent("Rover", 100, 1, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                stateManager.addResourceRate(1);
+            }
+
+            @Override
+            public boolean isPerpetual() {
+                return false;
+            }
+        }));
+
+        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 100, 0, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                stateManager.addChargeRate(1);
+            }
+
+            @Override
+            public boolean isPerpetual() {
+                return false;
+            }
+        }));
+    }
+
     @Override
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stateManager.update(Gdx.graphics.getDeltaTime());
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
