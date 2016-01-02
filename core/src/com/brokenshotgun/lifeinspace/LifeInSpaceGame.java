@@ -114,10 +114,6 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         mainTable.add(chargeLabel);
         mainTable.row();
 
-        resourceLabel = new Label("Resources = 0", labelStyle);
-        mainTable.add(resourceLabel);
-        mainTable.row();
-
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
         chargeButton.addListener(new InputListener() {
@@ -158,14 +154,17 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         buildTable.row();
 
+        resourceLabel = new Label("Resources = 0", labelStyle);
+
         TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
         buildConfirmButton.pad(10);
         buildConfirmButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (stateManager.has(buildList.getSelected())) {
+                if (stateManager.has(buildList.getSelected()) || buildList.getSelected().getResourceCost() > stateManager.getResources()) {
                     btnErrorSfx.play();
                 } else {
                     Gdx.app.log("Build", "building " + buildList.getSelected());
+                    stateManager.spendResources(buildList.getSelected().getResourceCost());
                     stateManager.add(buildList.getSelected());
                     btnPressSfx.play();
                 }
@@ -187,6 +186,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildButtonGroup.space(100f);
         buildButtonGroup.padTop(10f);
         buildButtonGroup.padBottom(10f);
+        buildButtonGroup.addActor(resourceLabel);
         buildButtonGroup.addActor(buildConfirmButton);
         buildButtonGroup.addActor(backButton);
         buildTable.add(buildButtonGroup);
@@ -206,7 +206,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             }
         }));
 
-        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 100, 0, new Effect() {
+        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);

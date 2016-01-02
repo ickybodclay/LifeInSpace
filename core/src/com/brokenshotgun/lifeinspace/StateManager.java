@@ -16,7 +16,7 @@ public class StateManager {
     public StateManager() {
         charge = 0;
         chargeRate = 1;
-        resources = 0;
+        resources = 100;
         resourceRate = 0;
         stationComponents = new HashSet<StationComponent>();
     }
@@ -32,6 +32,12 @@ public class StateManager {
     public boolean spendCharge(int amount) {
         if (amount > charge) return false;
         charge -= amount;
+        return true;
+    }
+
+    public boolean spendResources(int amount) {
+        if (amount > resources) return false;
+        resources -= amount;
         return true;
     }
 
@@ -92,8 +98,9 @@ public class StateManager {
         for (StationComponent component : stationComponents) {
             if (component.getEffect().isPerpetual()) {
                 component.getEffect().apply(this);
-                charge -= component.getEnergyCost();
             }
+
+            charge -= component.getEnergyCost();
         }
 
         updateTime = 0f;
