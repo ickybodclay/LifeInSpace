@@ -10,6 +10,9 @@ public class StateManager {
     private int resources;
     private int resourceRate;
 
+    private float cycleTime = 1f;
+    private float updateTime = 0f;
+
     public StateManager() {
         charge = 0;
         chargeRate = 1;
@@ -79,10 +82,20 @@ public class StateManager {
     }
 
     public void update(float delta) {
+        updateTime += delta;
+
+        if (updateTime < cycleTime) return;
+
+        resources += resourceRate;
+        charge += chargeRate;
+
         for (StationComponent component : stationComponents) {
             if (component.getEffect().isPerpetual()) {
                 component.getEffect().apply(this);
+                charge -= component.getEnergyCost();
             }
         }
+
+        updateTime = 0f;
     }
 }

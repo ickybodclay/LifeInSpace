@@ -30,6 +30,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
     private Table mainTable;
     private Label chargeLabel;
+    private Label resourceLabel;
     private Table buildTable;
 
     private AssetManager assetManager;
@@ -113,12 +114,15 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         mainTable.add(chargeLabel);
         mainTable.row();
 
+        resourceLabel = new Label("Resources = 0", labelStyle);
+        mainTable.add(resourceLabel);
+        mainTable.row();
+
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
         chargeButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 stateManager.addCharge();
-                chargeLabel.setText("Charge = " + stateManager.getCharge());
                 btnPressSfx.play();
                 return false;
             }
@@ -160,8 +164,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (stateManager.has(buildList.getSelected())) {
                     btnErrorSfx.play();
-                }
-                else {
+                } else {
                     Gdx.app.log("Build", "building " + buildList.getSelected());
                     stateManager.add(buildList.getSelected());
                     btnPressSfx.play();
@@ -220,9 +223,17 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         stateManager.update(Gdx.graphics.getDeltaTime());
+        updateUI();
+
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+    }
+
+    private void updateUI() {
+        chargeLabel.setText("Charge = " + stateManager.getCharge());
+        resourceLabel.setText("Resources = " + stateManager.getResources());
     }
 
     @Override
