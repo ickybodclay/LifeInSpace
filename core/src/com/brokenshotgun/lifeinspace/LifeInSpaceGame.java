@@ -256,22 +256,12 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public void apply(StateManager stateManager) {
                 stateManager.addResourceRate(1);
             }
-
-            @Override
-            public boolean isPerpetual() {
-                return false;
-            }
         }, roverWidget));
 
         componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
-            }
-
-            @Override
-            public boolean isPerpetual() {
-                return false;
             }
         }, null));
     }

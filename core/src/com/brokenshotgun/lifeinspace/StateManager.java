@@ -74,9 +74,7 @@ public class StateManager {
 
         stationComponents.add(component);
 
-        if (!component.getEffect().isPerpetual()) {
-            component.getEffect().apply(this);
-        }
+        component.getEffect().apply(this);
     }
 
     public void remove(StationComponent component) {
@@ -94,12 +92,6 @@ public class StateManager {
 
         resources += resourceRate;
         charge += chargeRate;
-
-        for (StationComponent component : stationComponents) {
-            if (component.getEffect().isPerpetual()) {
-                component.getEffect().apply(this);
-            }
-        }
 
         updateTime = 0f;
     }
