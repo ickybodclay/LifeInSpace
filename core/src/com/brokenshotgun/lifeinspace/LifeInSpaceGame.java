@@ -8,8 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
@@ -18,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -143,11 +143,10 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
-        chargeButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        chargeButton.addListener(new ChangeListener() {
+            public void changed (ChangeEvent event, Actor actor) {
                 stateManager.addCharge();
                 btnPressSfx.play();
-                return false;
             }
         });
 
@@ -156,12 +155,11 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         final TextButton buildButton = new TextButton("Build", buttonStyle);
         buildButton.pad(10);
-        buildButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        buildButton.addListener(new ChangeListener() {
+            public void changed (ChangeEvent event, Actor actor) {
                 mainTable.setVisible(false);
                 buildTable.setVisible(true);
                 btnPressSfx.play();
-                return false;
             }
         });
         topMidGroup.add(buildButton).expandX().fill();
@@ -186,8 +184,8 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
         buildConfirmButton.pad(10);
-        buildConfirmButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        buildConfirmButton.addListener(new ChangeListener() {
+            public void changed (ChangeEvent event, Actor actor) {
                 if (stateManager.has(buildList.getSelected()) || buildList.getSelected().getResourceCost() > stateManager.getResources()) {
                     btnErrorSfx.play();
                 } else {
@@ -200,18 +198,16 @@ public class LifeInSpaceGame extends ApplicationAdapter {
                     }
                     btnPressSfx.play();
                 }
-                return false;
             }
         });
 
         TextButton backButton = new TextButton("Back", buttonStyle);
         backButton.pad(10);
-        backButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        backButton.addListener(new ChangeListener() {
+            public void changed (ChangeEvent event, Actor actor) {
                 mainTable.setVisible(true);
                 buildTable.setVisible(false);
                 btnBackSfx.play();
-                return false;
             }
         });
         HorizontalGroup buildButtonGroup = new HorizontalGroup();
@@ -231,7 +227,27 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         Table roverTable = new Table();
         roverResourceLabel = new Label("Resources = " + stateManager.getResources(), labelStyle);
+        TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", buttonStyle);
+        roverUseButton.pad(10);
+        roverUseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (stateManager.getCharge() >= 10) {
+                    // TODO enable rover minigame
+                    stateManager.addResources(25);
+                    stateManager.spendCharge(10);
+                    btnPressSfx.play();
+                }
+                else {
+                    btnErrorSfx.play();
+                }
+            }
+        });
         roverTable.add(roverResourceLabel);
+        roverTable.row();
+        roverTable.add(roverUseButton);
+
+
         roverTable.setDebug(true);
         Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
 

@@ -53,7 +53,7 @@ public class StationComponent {
     public String toString() {
         return name +
             " resource cost = " + resourceCost +
-            ", energy cost = " + energyCost + " charge per cycle";
+            ", energy cost = " + energyCost + " charge per use";
     }
 
     @Override

@@ -99,10 +99,12 @@ public class StateManager {
             if (component.getEffect().isPerpetual()) {
                 component.getEffect().apply(this);
             }
-
-            charge -= component.getEnergyCost();
         }
 
         updateTime = 0f;
+    }
+
+    public void addResources(int amount) {
+        resources += amount;
     }
 }
