@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -32,8 +31,16 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     private ScrollPane.ScrollPaneStyle scrollStyle;
 
     private Table mainTable;
+    private Container[] mainGrid;
+    private static final int TOP_LEFT = 0;
+    private static final int TOP_MID = 1;
+    private static final int TOP_RIGHT = 2;
+    private static final int BOTTOM_LEFT = 3;
+    private static final int BOTTOM_MID = 4;
+    private static final int BOTTOM_RIGHT = 5;
     private Label chargeLabel;
-    private Label resourceLabel;
+    private Label buildResourceLabel;
+
     private Table buildTable;
 
     private AssetManager assetManager;
@@ -74,8 +81,8 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     }
 
     private void setupUI() {
-        SetupComponents();
         SetupStyles();
+        SetupComponents();
         SetupMainScreen();
         SetupBuildScreen();
     }
@@ -106,14 +113,6 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         scrollStyle = new ScrollPane.ScrollPaneStyle();
         scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
     }
-
-    private Container[] mainGrid;
-    private static final int TOP_LEFT = 0;
-    private static final int TOP_MID = 1;
-    private static final int TOP_RIGHT = 2;
-    private static final int BOTTOM_LEFT = 3;
-    private static final int BOTTOM_MID = 4;
-    private static final int BOTTOM_RIGHT = 5;
 
     private void SetupMainScreen() {
         mainTable = new Table();
@@ -183,7 +182,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
 
         buildTable.row();
 
-        resourceLabel = new Label("Resources = 0", labelStyle);
+        buildResourceLabel = new Label("Resources = 0", labelStyle);
 
         TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
         buildConfirmButton.pad(10);
@@ -192,9 +191,13 @@ public class LifeInSpaceGame extends ApplicationAdapter {
                 if (stateManager.has(buildList.getSelected()) || buildList.getSelected().getResourceCost() > stateManager.getResources()) {
                     btnErrorSfx.play();
                 } else {
-                    Gdx.app.log("Build", "building " + buildList.getSelected());
-                    stateManager.spendResources(buildList.getSelected().getResourceCost());
-                    stateManager.add(buildList.getSelected());
+                    StationComponent selected = buildList.getSelected();
+                    Gdx.app.log("Build", "building " + selected);
+                    stateManager.spendResources(selected.getResourceCost());
+                    stateManager.add(selected);
+                    if(selected.hasWidget()) {
+                        mainGrid[selected.getWidget().position].setActor(selected.getWidget().widget);
+                    }
                     btnPressSfx.play();
                 }
                 return false;
@@ -215,14 +218,23 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         buildButtonGroup.space(100f);
         buildButtonGroup.padTop(10f);
         buildButtonGroup.padBottom(10f);
-        buildButtonGroup.addActor(resourceLabel);
+        buildButtonGroup.addActor(buildResourceLabel);
         buildButtonGroup.addActor(buildConfirmButton);
         buildButtonGroup.addActor(backButton);
         buildTable.add(buildButtonGroup);
     }
 
+    private Label roverResourceLabel;
+
     private void SetupComponents() {
         componentArray = new Array<StationComponent>();
+
+        Table roverTable = new Table();
+        roverResourceLabel = new Label("Resources = " + stateManager.getResources(), labelStyle);
+        roverTable.add(roverResourceLabel);
+        roverTable.setDebug(true);
+        Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
+
         componentArray.add(new StationComponent("Rover", 100, 1, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
@@ -233,7 +245,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean isPerpetual() {
                 return false;
             }
-        }));
+        }, roverWidget));
 
         componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, new Effect() {
             @Override
@@ -245,7 +257,7 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             public boolean isPerpetual() {
                 return false;
             }
-        }));
+        }, null));
     }
 
     @Override
@@ -261,8 +273,13 @@ public class LifeInSpaceGame extends ApplicationAdapter {
     }
 
     private void updateUI() {
-        chargeLabel.setText("Charge = " + stateManager.getCharge());
-        resourceLabel.setText("Resources = " + stateManager.getResources());
+        if (mainTable.isVisible()) {
+            chargeLabel.setText("Charge = " + stateManager.getCharge());
+            roverResourceLabel.setText("Resources = " + stateManager.getResources());
+        }
+        else if (buildTable.isVisible()) {
+            buildResourceLabel.setText("Resources = " + stateManager.getResources());
+        }
     }
 
     @Override

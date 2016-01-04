@@ -1,16 +1,20 @@
 package com.brokenshotgun.lifeinspace;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
+
 public class StationComponent {
     private String name;
     private int resourceCost;
     private int energyCost;
     private Effect effect;
+    private Widget widget;
 
-    public StationComponent(String name, int resourceCost, int energyCost, Effect effect) {
+    public StationComponent(String name, int resourceCost, int energyCost, Effect effect, Widget widget) {
         this.name = name;
         this.resourceCost = resourceCost;
         this.energyCost = energyCost;
         this.effect = effect;
+        this.widget = widget;
     }
 
     public String getName() {
@@ -35,6 +39,14 @@ public class StationComponent {
 
     public Effect getEffect() {
         return effect;
+    }
+
+    public boolean hasWidget() {
+        return widget != null;
+    }
+
+    public Widget getWidget() {
+        return widget;
     }
 
     @Override
