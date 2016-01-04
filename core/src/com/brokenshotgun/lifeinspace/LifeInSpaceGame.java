@@ -11,13 +11,16 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 public class LifeInSpaceGame extends ApplicationAdapter {
@@ -104,15 +107,40 @@ public class LifeInSpaceGame extends ApplicationAdapter {
         scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
     }
 
+    private Container[] mainGrid;
+    private static final int TOP_LEFT = 0;
+    private static final int TOP_MID = 1;
+    private static final int TOP_RIGHT = 2;
+    private static final int BOTTOM_LEFT = 3;
+    private static final int BOTTOM_MID = 4;
+    private static final int BOTTOM_RIGHT = 5;
+
     private void SetupMainScreen() {
         mainTable = new Table();
         mainTable.setFillParent(true);
-        //mainTable.setDebug(true);
+        mainTable.setDebug(true);
         stage.addActor(mainTable);
 
+        // setup grid for placeholder cells for station components
+        mainGrid = new Container[6];
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                int gridIndex = (i * 3) + j;
+                mainGrid[gridIndex] = new Container();
+                mainTable.add(mainGrid[gridIndex]).expand().fill();
+            }
+
+            mainTable.row();
+        }
+
+        Table topMidGroup = new Table();
+        topMidGroup.setDebug(true);
+        mainGrid[TOP_MID].setActor(topMidGroup);
+
         chargeLabel = new Label("Charge = 0", labelStyle);
-        mainTable.add(chargeLabel);
-        mainTable.row();
+        chargeLabel.setAlignment(Align.center, Align.center);
+        topMidGroup.add(chargeLabel).width(150f);
+        topMidGroup.row();
 
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
@@ -124,8 +152,8 @@ public class LifeInSpaceGame extends ApplicationAdapter {
             }
         });
 
-        mainTable.add(chargeButton).expand();
-        mainTable.row();
+        topMidGroup.add(chargeButton).expandX().fill();
+        topMidGroup.row();
 
         final TextButton buildButton = new TextButton("Build", buttonStyle);
         buildButton.pad(10);
@@ -137,7 +165,8 @@ public class LifeInSpaceGame extends ApplicationAdapter {
                 return false;
             }
         });
-        mainTable.add(buildButton).expand();
+        topMidGroup.add(buildButton).expandX().fill();
+        topMidGroup.row();
     }
 
     private void SetupBuildScreen() {
