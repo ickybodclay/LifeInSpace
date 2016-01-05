@@ -1,6 +1,7 @@
 package com.brokenshotgun.lifeinspace;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class StateManager {
     private HashSet<StationComponent> stationComponents;
@@ -13,6 +14,8 @@ public class StateManager {
     private float cycleTime = 1f;
     private float updateTime = 0f;
 
+    private StateListener stateListener;
+
     public StateManager() {
         charge = 0;
         chargeRate = 1;
@@ -22,22 +25,32 @@ public class StateManager {
     }
 
     public void addCharge() {
-        charge += chargeRate;
+        addCharge(chargeRate);
     }
 
     public void addCharge(int amount) {
         charge += amount;
+
+        if (stateListener != null) stateListener.onStateChanged(this);
+    }
+
+    public void addResources(int amount) {
+        resources += amount;
+
+        if (stateListener != null) stateListener.onStateChanged(this);
     }
 
     public boolean spendCharge(int amount) {
         if (amount > charge) return false;
         charge -= amount;
+        if (stateListener != null) stateListener.onStateChanged(this);
         return true;
     }
 
     public boolean spendResources(int amount) {
         if (amount > resources) return false;
         resources -= amount;
+        if (stateListener != null) stateListener.onStateChanged(this);
         return true;
     }
 
@@ -51,14 +64,12 @@ public class StateManager {
 
     public void addChargeRate(int chargeRate) {
         this.chargeRate += chargeRate;
+
+        if (stateListener != null) stateListener.onStateChanged(this);
     }
 
     public int getResources() {
         return resources;
-    }
-
-    public void setResources(int resources) {
-        this.resources = resources;
     }
 
     public int getResourceRate() {
@@ -67,13 +78,13 @@ public class StateManager {
 
     public void addResourceRate(int resourceRate) {
         this.resourceRate += resourceRate;
+
+        if (stateListener != null) stateListener.onStateChanged(this);
     }
 
     public void add(StationComponent component) {
         if (has(component)) return;
-
         stationComponents.add(component);
-
         component.getEffect().apply(this);
     }
 
@@ -93,10 +104,16 @@ public class StateManager {
         resources += resourceRate;
         charge += chargeRate;
 
+        if (stateListener != null) stateListener.onStateChanged(this);
+
         updateTime = 0f;
     }
 
-    public void addResources(int amount) {
-        resources += amount;
+    public Set<StationComponent> getStationComponents() {
+        return stationComponents;
+    }
+
+    public void register(StateListener listener) {
+        this.stateListener = listener;
     }
 }

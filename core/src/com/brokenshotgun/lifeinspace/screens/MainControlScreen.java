@@ -22,12 +22,14 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.brokenshotgun.lifeinspace.Effect;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
+import com.brokenshotgun.lifeinspace.StateListener;
 import com.brokenshotgun.lifeinspace.StateManager;
 import com.brokenshotgun.lifeinspace.StationComponent;
 import com.brokenshotgun.lifeinspace.Widget;
 
-public class MainControlScreen implements Screen {
+public class MainControlScreen implements Screen, StateListener {
     private final LifeInSpaceGame game;
+    private boolean debug = false;
 
     private Stage stage;
 
@@ -45,6 +47,7 @@ public class MainControlScreen implements Screen {
     private static final int BOTTOM_MID = 4;
     private static final int BOTTOM_RIGHT = 5;
     private Label chargeLabel;
+    private Label resourceLabel;
     private Label buildResourceLabel;
 
     private Table buildTable;
@@ -82,6 +85,8 @@ public class MainControlScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         setupUI();
+
+        game.getStateManager().register(this);
     }
 
     private void setupUI() {
@@ -89,6 +94,15 @@ public class MainControlScreen implements Screen {
         SetupComponents();
         SetupMainScreen();
         SetupBuildScreen();
+        SetupWidgets();
+    }
+
+    private void SetupWidgets() {
+        for (StationComponent component : game.getStateManager().getStationComponents()) {
+            if (component.hasWidget()) {
+                mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
+            }
+        }
     }
 
     private void SetupStyles() {
@@ -121,7 +135,7 @@ public class MainControlScreen implements Screen {
     private void SetupMainScreen() {
         mainTable = new Table();
         mainTable.setFillParent(true);
-        mainTable.setDebug(true);
+        mainTable.setDebug(debug);
         stage.addActor(mainTable);
 
         // setup grid for placeholder cells for station components
@@ -137,18 +151,23 @@ public class MainControlScreen implements Screen {
         }
 
         Table topMidGroup = new Table();
-        topMidGroup.setDebug(true);
+        topMidGroup.setDebug(debug);
         mainGrid[TOP_MID].setActor(topMidGroup);
 
-        chargeLabel = new Label("Charge = 0", labelStyle);
+        chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), labelStyle);
         chargeLabel.setAlignment(Align.center, Align.center);
         topMidGroup.add(chargeLabel).width(150f);
+        topMidGroup.row();
+
+        resourceLabel = new Label("Resources = " + game.getStateManager().getResources(), labelStyle);
+        resourceLabel.setAlignment(Align.center, Align.center);
+        topMidGroup.add(resourceLabel).width(150f);
         topMidGroup.row();
 
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
         chargeButton.pad(10);
         chargeButton.addListener(new ChangeListener() {
-            public void changed (ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 game.getStateManager().addCharge();
                 btnPressSfx.play();
             }
@@ -160,7 +179,7 @@ public class MainControlScreen implements Screen {
         final TextButton buildButton = new TextButton("Build", buttonStyle);
         buildButton.pad(10);
         buildButton.addListener(new ChangeListener() {
-            public void changed (ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 mainTable.setVisible(false);
                 buildTable.setVisible(true);
                 btnPressSfx.play();
@@ -189,15 +208,15 @@ public class MainControlScreen implements Screen {
         TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
         buildConfirmButton.pad(10);
         buildConfirmButton.addListener(new ChangeListener() {
-            public void changed (ChangeEvent event, Actor actor) {
-                if (game.getStateManager().has(buildList.getSelected()) || buildList.getSelected().getResourceCost() > game.getStateManager().getResources()) {
+            public void changed(ChangeEvent event, Actor actor) {
+                StationComponent selected = buildList.getSelected();
+                if (game.getStateManager().has(selected) || selected.getResourceCost() > game.getStateManager().getResources()) {
                     btnErrorSfx.play();
                 } else {
-                    StationComponent selected = buildList.getSelected();
                     Gdx.app.log("Build", "building " + selected);
                     game.getStateManager().spendResources(selected.getResourceCost());
                     game.getStateManager().add(selected);
-                    if(selected.hasWidget()) {
+                    if (selected.hasWidget()) {
                         mainGrid[selected.getWidget().position].setActor(selected.getWidget().widget);
                     }
                     btnPressSfx.play();
@@ -208,7 +227,7 @@ public class MainControlScreen implements Screen {
         TextButton backButton = new TextButton("Back", buttonStyle);
         backButton.pad(10);
         backButton.addListener(new ChangeListener() {
-            public void changed (ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 mainTable.setVisible(true);
                 buildTable.setVisible(false);
                 btnBackSfx.play();
@@ -224,13 +243,10 @@ public class MainControlScreen implements Screen {
         buildTable.add(buildButtonGroup);
     }
 
-    private Label roverResourceLabel;
-
     private void SetupComponents() {
         componentArray = new Array<StationComponent>();
 
         Table roverTable = new Table();
-        roverResourceLabel = new Label("Resources = " + game.getStateManager().getResources(), labelStyle);
         TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", buttonStyle);
         roverUseButton.pad(10);
         roverUseButton.addListener(new ChangeListener() {
@@ -240,18 +256,14 @@ public class MainControlScreen implements Screen {
                     game.setScreen(new RoverScreen(game));
                     game.getStateManager().spendCharge(10);
                     btnPressSfx.play();
-                }
-                else {
+                } else {
                     btnErrorSfx.play();
                 }
             }
         });
-        roverTable.add(roverResourceLabel);
-        roverTable.row();
         roverTable.add(roverUseButton);
 
-
-        roverTable.setDebug(true);
+        roverTable.setDebug(debug);
         Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
 
         componentArray.add(new StationComponent("Rover", 100, 1, new Effect() {
@@ -275,16 +287,15 @@ public class MainControlScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.getStateManager().update(delta);
-        updateUI();
-
         stage.act(delta);
         stage.draw();
     }
 
-    private void updateUI() {
+    @Override
+    public void onStateChanged(StateManager stateManager) {
         if (mainTable.isVisible()) {
             chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
-            roverResourceLabel.setText("Resources = " + game.getStateManager().getResources());
+            resourceLabel.setText("Resources = " + game.getStateManager().getResources());
         }
         else if (buildTable.isVisible()) {
             buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
@@ -303,7 +314,7 @@ public class MainControlScreen implements Screen {
 
     @Override
     public void hide() {
-
+        game.getStateManager().register(null);
     }
 
     @Override
@@ -314,6 +325,5 @@ public class MainControlScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
-        game.getAssetManager().dispose();
     }
 }
