@@ -2,8 +2,10 @@ package com.brokenshotgun.lifeinspace.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -11,14 +13,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 
 
-public class Rover extends Actor {
+public class Rover extends Actor implements QueryCallback {
     private final Sprite sprite;
     private final Body body;
+    private final World world;
+
+    private ShapeRenderer shapeRenderer;
 
     private float speed = 200f;
 
@@ -28,8 +35,12 @@ public class Rover extends Actor {
 
     public Rover(Sprite sprite, World world) {
         this.sprite = sprite;
+        this.world = world;
+
         setWidth(sprite.getWidth());
         setHeight(sprite.getHeight());
+
+        shapeRenderer = new ShapeRenderer();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -46,6 +57,7 @@ public class Rover extends Actor {
         fixtureDef.density = 1f;
 
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData("rover");
 
         shape.dispose();
     }
@@ -85,9 +97,28 @@ public class Rover extends Actor {
 
         body.setLinearVelocity(dir.x * speed, dir.y * speed);
 
-        //setX(getX() + (dir.x * speed * delta));
-        //setY(getY() + (dir.y * speed * delta));
+        // FIXME should only query on an interval instead of every frame
+        scan();
+    }
+
+    private void scan() {
+        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.box(
+                body.getPosition().x - (sprite.getWidth() / 2) - 1f, body.getPosition().y - (sprite.getHeight() / 2) - 1f, 0f,
+                sprite.getWidth() + 2f, sprite.getHeight() + 2f, 0f);
+        shapeRenderer.end();
+        drawDebug(shapeRenderer);
+        world.QueryAABB(this,
+                body.getPosition().x - (sprite.getWidth() / 2) - 1f, body.getPosition().y - (sprite.getHeight() / 2) - 1f,
+                body.getPosition().x + (sprite.getWidth() / 2) + 1f, body.getPosition().y + (sprite.getHeight() / 2) + 1f);
     }
 
 
+    @Override
+    public boolean reportFixture(Fixture fixture) {
+        if (fixture.getUserData() == null || fixture.getUserData().equals("rover")) return true;
+        Gdx.app.log("Rover", "fixture user data = " + fixture.getUserData());
+        return false;
+    }
 }

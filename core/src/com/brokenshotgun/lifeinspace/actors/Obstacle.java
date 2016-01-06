@@ -31,6 +31,7 @@ public class Obstacle extends Actor {
         fixtureDef.density = 1f;
 
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData("rock");
 
         shape.dispose();
     }
