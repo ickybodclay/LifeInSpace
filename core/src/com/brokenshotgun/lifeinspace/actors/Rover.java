@@ -6,32 +6,59 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 
 
 public class Rover extends Actor {
     private final Sprite sprite;
+    private final Body body;
 
     private float speed = 200f;
 
-    public Rover(Sprite sprite) {
+    private final Vector2 dir = new Vector2();
+    private final Vector3 mousePos = new Vector3();
+    private final float deadzone = 2f;
+
+    public Rover(Sprite sprite, World world) {
         this.sprite = sprite;
         setWidth(sprite.getWidth());
         setHeight(sprite.getHeight());
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(200, 200);
+        bodyDef.fixedRotation = true;
+
+        body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        shape.dispose();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        sprite.setPosition(getX(), getY());
+        sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
+        sprite.setRotation((float) Math.toDegrees(body.getAngle()));
+
         sprite.draw(batch);
     }
-
-    private final Vector2 dir = new Vector2();
-    private final Vector3 mousePos = new Vector3();
-    private final float deadzone = 2f;
 
     @Override
     public void act(float delta) {
@@ -45,9 +72,8 @@ public class Rover extends Actor {
             mousePos.y = Gdx.input.getY();
             mousePos.z = 0f;
             Vector3 newPos = getStage().getCamera().unproject(mousePos);
-            //Gdx.app.log("Rover", String.format("M(%.2f, %.2f) | A(%.2f, %.2f)", newPos.x, newPos.y, getX(Align.center), getY(Align.center)));
-            dir.x = newPos.x - getX(Align.center);
-            dir.y = newPos.y - getY(Align.center);
+            dir.x = newPos.x - body.getPosition().x;
+            dir.y = newPos.y - body.getPosition().y;
 
             if (Math.abs(dir.x) < deadzone && Math.abs(dir.y) < deadzone) {
                 dir.x = 0f;
@@ -57,7 +83,11 @@ public class Rover extends Actor {
                 dir.nor();
         }
 
-        setX(getX() + (dir.x * speed * delta));
-        setY(getY() + (dir.y * speed * delta));
+        body.setLinearVelocity(dir.x * speed, dir.y * speed);
+
+        //setX(getX() + (dir.x * speed * delta));
+        //setY(getY() + (dir.y * speed * delta));
     }
+
+
 }
