@@ -17,7 +17,7 @@ public class StateManager {
     private StateListener stateListener;
 
     public StateManager() {
-        charge = 0;
+        charge = 10;
         chargeRate = 1;
         resources = 100;
         resourceRate = 0;

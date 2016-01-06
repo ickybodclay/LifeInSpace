@@ -98,6 +98,10 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void SetupWidgets() {
+        // FIXME for testing only
+        if (!game.getStateManager().has(componentArray.first()))
+            game.getStateManager().add(componentArray.first());
+
         for (StationComponent component : game.getStateManager().getStationComponents()) {
             if (component.hasWidget()) {
                 mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
