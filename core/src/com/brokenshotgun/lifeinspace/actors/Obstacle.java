@@ -19,12 +19,12 @@ public class Obstacle extends Actor {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(sprite.getX(), sprite.getY());
+        bodyDef.position.set(100, 100);
 
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
+        shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -39,7 +39,7 @@ public class Obstacle extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        sprite.setPosition(body.getPosition().x, body.getPosition().y);
+        sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
         sprite.setRotation((float) Math.toDegrees(body.getAngle()));
 
         sprite.draw(batch);
