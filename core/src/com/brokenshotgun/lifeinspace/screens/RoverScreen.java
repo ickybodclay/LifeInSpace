@@ -157,18 +157,7 @@ public class RoverScreen implements Screen, ContactListener {
         }
     }
 
-    @Override
-    public void endContact(Contact contact) {
-
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-
-    }
+    @Override public void endContact(Contact contact) {}
+    @Override public void preSolve(Contact contact, Manifold oldManifold) {}
+    @Override public void postSolve(Contact contact, ContactImpulse impulse) {}
 }

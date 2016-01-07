@@ -26,8 +26,6 @@ public class Rover extends Actor {
     private final Body body;
     private final World world;
 
-    private ShapeRenderer shapeRenderer;
-
     private float speed = 200f;
 
     private final Vector2 dir = new Vector2();
@@ -40,8 +38,6 @@ public class Rover extends Actor {
 
         setWidth(sprite.getWidth());
         setHeight(sprite.getHeight());
-
-        shapeRenderer = new ShapeRenderer();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -61,15 +57,6 @@ public class Rover extends Actor {
         fixture.setUserData(this);
 
         shape.dispose();
-
-        CircleShape sensorShape = new CircleShape();
-        sensorShape.setRadius(22.63f); // c = sqrt(a^2 + b^2), radius of sensor = length from center of square to corner
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.isSensor = true;
-        sensorDef.shape = sensorShape;
-        Fixture sensor = body.createFixture(sensorDef);
-        sensor.setUserData(this);
-        sensorShape.dispose();
     }
 
     @Override
