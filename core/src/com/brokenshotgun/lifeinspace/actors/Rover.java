@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -20,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 
 
-public class Rover extends Actor implements QueryCallback {
+public class Rover extends Actor {
     private final Sprite sprite;
     private final Body body;
     private final World world;
@@ -57,9 +58,18 @@ public class Rover extends Actor implements QueryCallback {
         fixtureDef.density = 1f;
 
         Fixture fixture = body.createFixture(fixtureDef);
-        fixture.setUserData("rover");
+        fixture.setUserData(this);
 
         shape.dispose();
+
+        CircleShape sensorShape = new CircleShape();
+        sensorShape.setRadius(22.63f); // c = sqrt(a^2 + b^2), radius of sensor = length from center of square to corner
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.isSensor = true;
+        sensorDef.shape = sensorShape;
+        Fixture sensor = body.createFixture(sensorDef);
+        sensor.setUserData(this);
+        sensorShape.dispose();
     }
 
     @Override
@@ -96,29 +106,5 @@ public class Rover extends Actor implements QueryCallback {
         }
 
         body.setLinearVelocity(dir.x * speed, dir.y * speed);
-
-        // FIXME should only query on an interval instead of every frame
-        scan();
-    }
-
-    private void scan() {
-        shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.box(
-                body.getPosition().x - (sprite.getWidth() / 2) - 1f, body.getPosition().y - (sprite.getHeight() / 2) - 1f, 0f,
-                sprite.getWidth() + 2f, sprite.getHeight() + 2f, 0f);
-        shapeRenderer.end();
-        drawDebug(shapeRenderer);
-        world.QueryAABB(this,
-                body.getPosition().x - (sprite.getWidth() / 2) - 1f, body.getPosition().y - (sprite.getHeight() / 2) - 1f,
-                body.getPosition().x + (sprite.getWidth() / 2) + 1f, body.getPosition().y + (sprite.getHeight() / 2) + 1f);
-    }
-
-
-    @Override
-    public boolean reportFixture(Fixture fixture) {
-        if (fixture.getUserData() == null || fixture.getUserData().equals("rover")) return true;
-        Gdx.app.log("Rover", "fixture user data = " + fixture.getUserData());
-        return false;
     }
 }

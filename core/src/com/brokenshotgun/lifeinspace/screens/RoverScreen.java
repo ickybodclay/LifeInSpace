@@ -9,14 +9,19 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
 import com.brokenshotgun.lifeinspace.actors.Obstacle;
+import com.brokenshotgun.lifeinspace.actors.Pickup;
 import com.brokenshotgun.lifeinspace.actors.Rover;
 
-public class RoverScreen implements Screen {
+public class RoverScreen implements Screen, ContactListener {
     private final LifeInSpaceGame game;
 
     private final Color martianRed = Color.valueOf("ac3232");
@@ -32,8 +37,10 @@ public class RoverScreen implements Screen {
 
     private Box2DDebugRenderer debugRenderer;
 
+    private Table ui;
     private Rover rover;
     private Obstacle rock;
+    private Pickup water;
 
     public RoverScreen(final LifeInSpaceGame game) {
         this.game = game;
@@ -55,6 +62,7 @@ public class RoverScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         world = new World(new Vector2(0f, 0f), true);
+        world.setContactListener(this);
 
         rover = new Rover(roverSprite, world);
         stage.addActor(rover);
@@ -62,9 +70,12 @@ public class RoverScreen implements Screen {
         rock = new Obstacle(rockSprite, world);
         stage.addActor(rock);
 
-        Table roverUi = new Table();
-        roverUi.setFillParent(true);
-        stage.addActor(roverUi);
+        water = new Pickup(waterSprite, world, Pickup.Type.WATER);
+        stage.addActor(water);
+
+        ui = new Table();
+        ui.setFillParent(true);
+        stage.addActor(ui);
 
         rover.toFront();
 
@@ -73,7 +84,7 @@ public class RoverScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.WHITE;
-        roverUi.add(new Label("Rover says : Hello world", labelStyle));
+        ui.add(new Label("Rover says : Hello world", labelStyle));
         */
     }
 
@@ -82,7 +93,8 @@ public class RoverScreen implements Screen {
         Gdx.gl.glClearColor(martianRed.r, martianRed.g, martianRed.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        world.step(1f/60f, 6, 2);
+        world.step(1f / 60f, 6, 2);
+        cleanupWorld();
         stage.act(delta);
         stage.draw();
 
@@ -91,6 +103,13 @@ public class RoverScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             game.getStateManager().addResources(25);
             game.setScreen(new MainControlScreen(game));
+        }
+    }
+
+    private void cleanupWorld() {
+        // TODO change to iterate through list of active pickups
+        if (water.isFlaggedForDelete()) {
+            water.delete();
         }
     }
 
@@ -118,5 +137,38 @@ public class RoverScreen implements Screen {
     public void dispose() {
         stage.dispose();
         world.dispose();
+    }
+
+    @Override
+    public void beginContact(Contact contact) {
+        Rover r =
+            (contact.getFixtureA().getUserData() instanceof Rover) ? (Rover)contact.getFixtureA().getUserData() :
+            (contact.getFixtureB().getUserData() instanceof Rover) ? (Rover)contact.getFixtureB().getUserData() : null;
+
+        Pickup p =
+            (contact.getFixtureA().getUserData() instanceof Pickup) ? (Pickup)contact.getFixtureA().getUserData() :
+            (contact.getFixtureB().getUserData() instanceof Pickup) ? (Pickup)contact.getFixtureB().getUserData() : null;
+
+        if (r != null && p != null) {
+            Gdx.app.log("RoverScreen", "pickup acquired!");
+            // add pickup resource type
+            // remove pickup from world
+            p.remove();
+        }
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+
     }
 }
