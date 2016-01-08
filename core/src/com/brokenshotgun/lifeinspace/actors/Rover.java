@@ -41,7 +41,7 @@ public class Rover extends Actor {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(200, 200);
+        bodyDef.position.set(400, 300);
         bodyDef.fixedRotation = true;
 
         body = world.createBody(bodyDef);

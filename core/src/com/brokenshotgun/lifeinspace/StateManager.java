@@ -12,6 +12,9 @@ public class StateManager {
     private int resourceRate;
     private int water;
 
+    private int waterGatherRate = 3;
+    private int oreGatherRate = 5;
+
     private float cycleTime = 1f;
     private float updateTime = 0f;
 
@@ -119,10 +122,19 @@ public class StateManager {
     }
 
     public void addWater(int amount) {
-        water += amount;
+        water += amount * waterGatherRate;
+    }
+
+    public void addOre(int amount) {
+        resources += amount * oreGatherRate;
     }
 
     public int getWater() {
         return water;
+    }
+
+    public void doubleGatherRate() {
+        waterGatherRate *= 2;
+        oreGatherRate *= 2;
     }
 }

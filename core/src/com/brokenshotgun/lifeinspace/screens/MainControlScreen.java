@@ -300,6 +300,13 @@ public class MainControlScreen implements Screen, StateListener {
                 stateManager.addChargeRate(1);
             }
         }, null));
+
+        componentArray.add(new StationComponent("Improved refinery (double rover gather rate)", 200, 0, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                stateManager.doubleGatherRate();
+            }
+        }, null));
     }
 
     @Override

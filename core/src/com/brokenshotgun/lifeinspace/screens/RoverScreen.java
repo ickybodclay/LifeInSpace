@@ -152,9 +152,9 @@ public class RoverScreen implements Screen, ContactListener {
         //debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
 
         // FIXME for testing only, screen will go back when charge is depleted?
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            game.getStateManager().addResources(ore * 5);
-            game.getStateManager().addWater(water * 3);
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            game.getStateManager().addOre(ore);
+            game.getStateManager().addWater(water);
             game.setScreen(new MainControlScreen(game));
         }
     }
