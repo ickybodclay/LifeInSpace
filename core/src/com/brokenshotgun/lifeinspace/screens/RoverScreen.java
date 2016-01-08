@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -26,9 +25,7 @@ import com.brokenshotgun.lifeinspace.actors.Obstacle;
 import com.brokenshotgun.lifeinspace.actors.Pickup;
 import com.brokenshotgun.lifeinspace.actors.Rover;
 
-import java.util.List;
 import java.util.Random;
-import java.util.RandomAccess;
 
 public class RoverScreen implements Screen, ContactListener {
     private final LifeInSpaceGame game;
@@ -44,16 +41,16 @@ public class RoverScreen implements Screen, ContactListener {
     private Stage stage;
     private World world;
 
-    private Box2DDebugRenderer debugRenderer;
+    //private Box2DDebugRenderer debugRenderer;
 
     private Table ui;
     private Label statusLabel;
 
     private Rover rover;
-    private Obstacle rock;
 
     private Random random;
     private Pool<Pickup> pickupPool;
+    private Pool<Obstacle> obstaclePool;
     private Array<Body> bodyArray = new Array<Body>();
 
     int water = 0;
@@ -84,9 +81,6 @@ public class RoverScreen implements Screen, ContactListener {
         rover = new Rover(roverSprite, world);
         stage.addActor(rover);
 
-        rock = new Obstacle(rockSprite, world);
-        stage.addActor(rock);
-
         random = new Random(System.currentTimeMillis());
 
         pickupPool = new Pool<Pickup>() {
@@ -96,21 +90,30 @@ public class RoverScreen implements Screen, ContactListener {
             }
         };
 
-        for (int i = 0; i < 3; i++) spawnPickup();
+        obstaclePool = new Pool<Obstacle>() {
+            @Override
+            protected Obstacle newObject() {
+                return new Obstacle(rockSprite, world);
+            }
+        };
+
+        for (int i = 0; i < 3; ++i) spawnPickup();
+        for (int i = 0; i < 10; ++i) spawnObstacle();
+
+        rover.toFront();
 
         ui = new Table();
         ui.setFillParent(true);
+        //ui.setDebug(true);
         stage.addActor(ui);
-
-        rover.toFront();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.WHITE;
         statusLabel = new Label("[Water : 0] [Ore : 0]", labelStyle);
-        ui.add(statusLabel).bottom().left();
+        ui.add(statusLabel).expand().bottom().left();
 
-        debugRenderer = new Box2DDebugRenderer();
+        //debugRenderer = new Box2DDebugRenderer();
     }
 
     private void spawnPickup() {
@@ -128,6 +131,13 @@ public class RoverScreen implements Screen, ContactListener {
         stage.addActor(p);
     }
 
+    private void spawnObstacle() {
+        Obstacle o = obstaclePool.obtain();
+        o.setup();
+        o.setPosition(random.nextInt(800), random.nextInt(600));
+        stage.addActor(o);
+    }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(martianRed.r, martianRed.g, martianRed.b, 1);
@@ -139,11 +149,12 @@ public class RoverScreen implements Screen, ContactListener {
         stage.draw();
         updateUI();
 
-        debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
+        //debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
 
         // FIXME for testing only, screen will go back when charge is depleted?
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            game.getStateManager().addResources(25);
+            game.getStateManager().addResources(ore * 5);
+            game.getStateManager().addWater(water * 3);
             game.setScreen(new MainControlScreen(game));
         }
     }
@@ -162,7 +173,7 @@ public class RoverScreen implements Screen, ContactListener {
     }
 
     private void updateUI() {
-        statusLabel.setText(String.format("[Water : %d] [Ore : %d]", water, ore));
+        statusLabel.setText(String.format("[Water : %d] [Ore : %d]", water * 3, ore * 5));
     }
 
     @Override

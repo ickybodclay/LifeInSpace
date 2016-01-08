@@ -10,6 +10,7 @@ public class StateManager {
     private int chargeRate;
     private int resources;
     private int resourceRate;
+    private int water;
 
     private float cycleTime = 1f;
     private float updateTime = 0f;
@@ -115,5 +116,13 @@ public class StateManager {
 
     public void register(StateListener listener) {
         this.stateListener = listener;
+    }
+
+    public void addWater(int amount) {
+        water += amount;
+    }
+
+    public int getWater() {
+        return water;
     }
 }

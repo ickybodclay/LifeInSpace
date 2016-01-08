@@ -9,14 +9,19 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Pool;
 
-public class Obstacle extends Actor {
+public class Obstacle extends Actor implements Pool.Poolable {
     private final Sprite sprite;
-    private final Body body;
+    private final World world;
+    private Body body;
 
     public Obstacle(Sprite sprite, World world) {
         this.sprite = sprite;
+        this.world = world;
+    }
 
+    public void setup() {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(100, 100);
@@ -37,12 +42,22 @@ public class Obstacle extends Actor {
     }
 
     @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+
+        body.setTransform(x, y, 0f);
+    }
+
+    @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
-        sprite.setRotation((float) Math.toDegrees(body.getAngle()));
-
-        sprite.draw(batch);
+        if(body != null) {
+            sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
+            sprite.setRotation((float) Math.toDegrees(body.getAngle()));
+            sprite.draw(batch);
+        }
     }
+
+    @Override public void reset() {}
 }

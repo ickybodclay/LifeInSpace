@@ -33,7 +33,10 @@ public class MainControlScreen implements Screen, StateListener {
 
     private Stage stage;
 
-    private Label.LabelStyle labelStyle;
+    private Label.LabelStyle chaLabelStyle;
+    private Label.LabelStyle resLabelStyle;
+    private Label.LabelStyle watLabelStyle;
+
     private TextButton.TextButtonStyle buttonStyle;
     private List.ListStyle listStyle;
     private ScrollPane.ScrollPaneStyle scrollStyle;
@@ -48,6 +51,7 @@ public class MainControlScreen implements Screen, StateListener {
     private static final int BOTTOM_RIGHT = 5;
     private Label chargeLabel;
     private Label resourceLabel;
+    private Label waterLabel;
     private Label buildResourceLabel;
 
     private Table buildTable;
@@ -110,9 +114,17 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void SetupStyles() {
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font = new BitmapFont();
-        labelStyle.fontColor = Color.GOLD;
+        chaLabelStyle = new Label.LabelStyle();
+        chaLabelStyle.font = new BitmapFont();
+        chaLabelStyle.fontColor = Color.GOLD;
+
+        resLabelStyle = new Label.LabelStyle();
+        resLabelStyle.font = new BitmapFont();
+        resLabelStyle.fontColor = Color.FIREBRICK;
+
+        watLabelStyle = new Label.LabelStyle();
+        watLabelStyle.font = new BitmapFont();
+        watLabelStyle.fontColor = Color.CYAN;
 
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = new BitmapFont();
@@ -158,14 +170,19 @@ public class MainControlScreen implements Screen, StateListener {
         topMidGroup.setDebug(debug);
         mainGrid[TOP_MID].setActor(topMidGroup);
 
-        chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), labelStyle);
+        chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), chaLabelStyle);
         chargeLabel.setAlignment(Align.center, Align.center);
         topMidGroup.add(chargeLabel).width(150f);
         topMidGroup.row();
 
-        resourceLabel = new Label("Resources = " + game.getStateManager().getResources(), labelStyle);
+        resourceLabel = new Label("Resources = " + game.getStateManager().getResources(), resLabelStyle);
         resourceLabel.setAlignment(Align.center, Align.center);
         topMidGroup.add(resourceLabel).width(150f);
+        topMidGroup.row();
+
+        waterLabel = new Label("Water = " + game.getStateManager().getWater(), watLabelStyle);
+        waterLabel.setAlignment(Align.center, Align.center);
+        topMidGroup.add(waterLabel).width(150f);
         topMidGroup.row();
 
         TextButton chargeButton = new TextButton("Charge", buttonStyle);
@@ -207,7 +224,7 @@ public class MainControlScreen implements Screen, StateListener {
 
         buildTable.row();
 
-        buildResourceLabel = new Label("Resources = 0", labelStyle);
+        buildResourceLabel = new Label("Resources = 0", chaLabelStyle);
 
         TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
         buildConfirmButton.pad(10);
@@ -300,6 +317,7 @@ public class MainControlScreen implements Screen, StateListener {
         if (mainTable.isVisible()) {
             chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
             resourceLabel.setText("Resources = " + game.getStateManager().getResources());
+            waterLabel.setText("Water = " + game.getStateManager().getWater());
         }
         else if (buildTable.isVisible()) {
             buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
