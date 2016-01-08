@@ -9,12 +9,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Pool;
 
-public class Pickup extends Actor {
-    private final Sprite sprite;
+public class Pickup extends Actor implements Pool.Poolable {
+    private Sprite sprite;
     private final World world;
-    private final Body body;
-    private final Type type;
+    private Body body;
+    private Type type;
 
     private boolean flaggedForDelete = false;
     private boolean deleted = false;
@@ -24,9 +25,12 @@ public class Pickup extends Actor {
         WATER
     }
 
-    public Pickup(Sprite sprite, World world, Type type) {
-        this.sprite = sprite;
+    public Pickup(World world) {
         this.world = world;
+    }
+
+    public void setup(Sprite typeSprite, Type type) {
+        this.sprite = typeSprite;
         this.type = type;
 
         BodyDef bodyDef = new BodyDef();
@@ -34,6 +38,7 @@ public class Pickup extends Actor {
         bodyDef.position.set(100, 200);
 
         body = world.createBody(bodyDef);
+        body.setUserData(this);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
@@ -50,13 +55,27 @@ public class Pickup extends Actor {
     }
 
     @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+
+        body.setTransform(x, y, 0f);
+    }
+
+    @Override
+    public void reset() {
+        flaggedForDelete = false;
+        deleted = false;
+    }
+
+    @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
-        sprite.setRotation((float) Math.toDegrees(body.getAngle()));
-
-        sprite.draw(batch);
+        if (sprite != null && body != null) {
+            sprite.setPosition(body.getPosition().x - (sprite.getWidth() / 2), body.getPosition().y - (sprite.getHeight() / 2));
+            sprite.setRotation((float) Math.toDegrees(body.getAngle()));
+            sprite.draw(batch);
+        }
     }
 
     public Type getType() {
@@ -74,9 +93,10 @@ public class Pickup extends Actor {
     }
 
     public void delete() {
-        if (deleted) return;
+        if (deleted || body == null) return;
 
         world.destroyBody(body);
+        body = null;
         deleted = true;
     }
 }
