@@ -3,6 +3,7 @@ package com.brokenshotgun.lifeinspace.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -32,7 +33,9 @@ public class RoverScreen implements Screen, ContactListener {
 
     private final Color martianRed = Color.valueOf("ac3232");
     private final String spriteAtlasFile = "sprites.atlas";
+    private final String pickupSfxFile = "sfx/pickup.wav";
     private TextureAtlas spriteAtlas;
+    private Sound pickupSfx;
     private Sprite rockSprite;
     private Sprite oreSprite;
     private Sprite waterSprite;
@@ -63,9 +66,11 @@ public class RoverScreen implements Screen, ContactListener {
     @Override
     public void show() {
         game.getAssetManager().load(spriteAtlasFile, TextureAtlas.class);
+        game.getAssetManager().load(pickupSfxFile, Sound.class);
         game.getAssetManager().finishLoading();
 
         spriteAtlas = game.getAssetManager().get(spriteAtlasFile);
+        pickupSfx = game.getAssetManager().get(pickupSfxFile);
 
         rockSprite = spriteAtlas.createSprite("rock");
         oreSprite = spriteAtlas.createSprite("ore");
@@ -214,6 +219,7 @@ public class RoverScreen implements Screen, ContactListener {
 
         if (r != null && p != null) {
             Gdx.app.log("RoverScreen", "pickup acquired!");
+            pickupSfx.play(1f, 0.85f + (random.nextFloat() * .2f), 1f);
             switch (p.getType()) {
                 case ORE:
                     ore++;
