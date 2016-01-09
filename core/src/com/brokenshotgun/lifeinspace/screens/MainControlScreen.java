@@ -94,26 +94,24 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void setupUI() {
-        SetupStyles();
-        SetupComponents();
-        SetupMainScreen();
-        SetupBuildScreen();
-        SetupWidgets();
+        setupStyles();
+        setupComponents();
+        setupMainScreen();
+        setupBuildScreen();
+        setupWidgets();
     }
 
-    private void SetupWidgets() {
+    private void setupWidgets() {
         // FIXME for testing only
-        if (!game.getStateManager().has(componentArray.first()))
-            game.getStateManager().add(componentArray.first());
+        //if (!game.getStateManager().has(componentArray.first()))
+        //    game.getStateManager().add(componentArray.first());
 
         for (StationComponent component : game.getStateManager().getStationComponents()) {
-            if (component.hasWidget()) {
-                mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
-            }
+            build(component);
         }
     }
 
-    private void SetupStyles() {
+    private void setupStyles() {
         chaLabelStyle = new Label.LabelStyle();
         chaLabelStyle.font = new BitmapFont();
         chaLabelStyle.fontColor = Color.GOLD;
@@ -148,7 +146,7 @@ public class MainControlScreen implements Screen, StateListener {
         scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
     }
 
-    private void SetupMainScreen() {
+    private void setupMainScreen() {
         mainTable = new Table();
         mainTable.setFillParent(true);
         mainTable.setDebug(debug);
@@ -210,13 +208,14 @@ public class MainControlScreen implements Screen, StateListener {
         topMidGroup.row();
     }
 
-    private void SetupBuildScreen() {
+    private List<StationComponent> buildList;
+    private void setupBuildScreen() {
         buildTable = new Table();
         buildTable.setFillParent(true);
         buildTable.setVisible(false);
         stage.addActor(buildTable);
 
-        final List<StationComponent> buildList = new List<StationComponent>(listStyle);
+        buildList = new List<StationComponent>(listStyle);
         buildList.setItems(componentArray);
 
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
@@ -236,10 +235,7 @@ public class MainControlScreen implements Screen, StateListener {
                 } else {
                     Gdx.app.log("Build", "building " + selected);
                     game.getStateManager().spendResources(selected.getResourceCost());
-                    game.getStateManager().add(selected);
-                    if (selected.hasWidget()) {
-                        mainGrid[selected.getWidget().position].setActor(selected.getWidget().widget);
-                    }
+                    build(selected);
                     btnPressSfx.play();
                 }
             }
@@ -264,7 +260,16 @@ public class MainControlScreen implements Screen, StateListener {
         buildTable.add(buildButtonGroup);
     }
 
-    private void SetupComponents() {
+    private void build(StationComponent component) {
+        game.getStateManager().add(component);
+        componentArray.removeValue(component, false);
+        buildList.setItems(componentArray);
+        if (component.hasWidget()) {
+            mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
+        }
+    }
+
+    private void setupComponents() {
         componentArray = new Array<StationComponent>();
 
         Table roverTable = new Table();

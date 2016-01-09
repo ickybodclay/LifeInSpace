@@ -116,7 +116,9 @@ public class RoverScreen implements Screen, ContactListener {
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.WHITE;
         statusLabel = new Label("[Water : 0] [Ore : 0]", labelStyle);
-        ui.add(statusLabel).expand().bottom().left();
+        ui.add(statusLabel).pad(10).expand().bottom().left();
+
+        ui.add(new Label("(RMB) Return", labelStyle)).pad(10).expand().bottom().right();
 
         //debugRenderer = new Box2DDebugRenderer();
     }
@@ -218,7 +220,6 @@ public class RoverScreen implements Screen, ContactListener {
             (contact.getFixtureB().getUserData() instanceof Pickup) ? (Pickup)contact.getFixtureB().getUserData() : null;
 
         if (r != null && p != null) {
-            Gdx.app.log("RoverScreen", "pickup acquired!");
             pickupSfx.play(1f, 0.85f + (random.nextFloat() * .2f), 1f);
             switch (p.getType()) {
                 case ORE:
