@@ -180,7 +180,9 @@ public class RoverScreen implements Screen, ContactListener {
     }
 
     private void updateUI() {
-        statusLabel.setText(String.format("[Water : %d] [Ore : %d]", water * 3, ore * 5));
+        statusLabel.setText(String.format("[Water : %d] [Ore : %d]",
+                water * game.getStateManager().getWaterGatherRate(),
+                ore * game.getStateManager().getOreGatherRate()));
     }
 
     @Override

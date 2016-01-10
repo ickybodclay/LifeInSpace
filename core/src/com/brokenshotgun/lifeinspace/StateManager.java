@@ -12,6 +12,9 @@ public class StateManager {
     private int resourceRate;
     private int water;
 
+    private int waterDrainRate = 10; // # of cycles to drain 1 water
+    private int waterDrainCounter = 1;
+
     private int waterGatherRate = 3;
     private int oreGatherRate = 5;
 
@@ -105,12 +108,17 @@ public class StateManager {
 
         if (updateTime < cycleTime) return;
 
+        if (waterDrainCounter % waterDrainRate == 0) {
+            water--;
+        }
+
         resources += resourceRate;
         charge += chargeRate;
 
         if (stateListener != null) stateListener.onStateChanged(this);
 
         updateTime = 0f;
+        waterDrainCounter++;
     }
 
     public Set<StationComponent> getStationComponents() {
@@ -136,5 +144,13 @@ public class StateManager {
     public void doubleGatherRate() {
         waterGatherRate *= 2;
         oreGatherRate *= 2;
+    }
+
+    public int getWaterGatherRate() {
+        return waterGatherRate;
+    }
+
+    public int getOreGatherRate() {
+        return oreGatherRate;
     }
 }
