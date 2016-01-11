@@ -1,22 +1,27 @@
 package com.brokenshotgun.lifeinspace;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
-
 public class StationComponent {
     private String name;
     private int resourceCost;
-    private int energyCost;
+    private int chargeCost;
     private Effect effect;
     private Widget widget;
     private boolean unique;
+    private int requiredLevel = -1;
 
-    public StationComponent(String name, int resourceCost, int energyCost, boolean unique, Effect effect, Widget widget) {
+    public StationComponent(String name, int resourceCost, int chargeCost, boolean unique, Effect effect, Widget widget) {
         this.name = name;
         this.resourceCost = resourceCost;
-        this.energyCost = energyCost;
+        this.chargeCost = chargeCost;
         this.unique = unique;
         this.effect = effect;
         this.widget = widget;
+    }
+
+    public StationComponent(String name, int resourceCost, int chargeCost, boolean unique, int requiredLevel, Effect effect, Widget widget) {
+        this(name, resourceCost, chargeCost, unique, effect, widget);
+
+        this.requiredLevel = requiredLevel;
     }
 
     public String getName() {
@@ -27,8 +32,8 @@ public class StationComponent {
      * Perpetual energy cost per station cycle.
      * @return
      */
-    public int getEnergyCost() {
-        return energyCost;
+    public int getChargeCost() {
+        return chargeCost;
     }
 
     /**
@@ -55,11 +60,19 @@ public class StationComponent {
         return unique;
     }
 
+    public boolean hasRequiredLevel() {
+        return requiredLevel != -1;
+    }
+
+    public int getRequiredLevel() {
+        return requiredLevel;
+    }
+
     @Override
     public String toString() {
         return name +
             " resource cost = " + resourceCost +
-            ", energy cost = " + energyCost + " charge per use";
+            ", charge needed to print = " + chargeCost;
     }
 
     @Override
@@ -70,7 +83,7 @@ public class StationComponent {
         StationComponent that = (StationComponent) o;
 
         if (resourceCost != that.resourceCost) return false;
-        if (energyCost != that.energyCost) return false;
+        if (chargeCost != that.chargeCost) return false;
         if (unique != that.unique) return  false;
         if (!name.equals(that.name)) return false;
         return true;
@@ -80,7 +93,7 @@ public class StationComponent {
     public int hashCode() {
         int result = name.hashCode();
         result = 31 * result + resourceCost;
-        result = 31 * result + energyCost;
+        result = 31 * result + chargeCost;
         result = 31 * result + (unique ? 1 : 0);
         return result;
     }

@@ -42,8 +42,15 @@ public class RoverScreen implements Screen, ContactListener {
     private Sprite waterSprite;
     private Sprite roverSprite;
 
+    private final int WIDTH = 800;
+    private final int HEIGHT = 600;
+
     private Stage stage;
     private World world;
+
+    private final float timeStep = 1f / 60f;
+    private final int velocityIterations = 6;
+    private final int positionIterations = 2;
 
     //private Box2DDebugRenderer debugRenderer;
 
@@ -103,8 +110,8 @@ public class RoverScreen implements Screen, ContactListener {
             }
         };
 
-        for (int i = 0; i < 3; ++i) spawnPickup();
-        for (int i = 0; i < 10; ++i) spawnObstacle();
+        for (int i = 0; i < 10; ++i) spawnPickup();
+        for (int i = 0; i < 20; ++i) spawnObstacle();
 
         rover.toFront();
 
@@ -146,8 +153,6 @@ public class RoverScreen implements Screen, ContactListener {
         stage.addActor(o);
     }
 
-    private final int WIDTH = 800;
-    private final int HEIGHT = 600;
     private void randomizePosition(Actor actor) {
         int xRange = WIDTH - (int)actor.getWidth();
         int yRange = HEIGHT - (int)actor.getHeight();
@@ -162,7 +167,8 @@ public class RoverScreen implements Screen, ContactListener {
         Gdx.gl.glClearColor(martianRed.r, martianRed.g, martianRed.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        world.step(1f / 60f, 6, 2);
+        game.getStateManager().update(delta);
+        world.step(timeStep, velocityIterations, positionIterations);
         cleanupWorld();
         stage.act(delta);
         stage.draw();

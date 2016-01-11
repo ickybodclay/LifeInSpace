@@ -11,6 +11,7 @@ public class StateManager {
     private int resources;
     private int resourceRate;
     private int water;
+    private int stationLevel = 0;
 
     private boolean autoCharge = false;
     private boolean autoGather = false;
@@ -30,9 +31,9 @@ public class StateManager {
     private StateListener stateListener;
 
     public StateManager() {
-        charge = 10;
+        charge = 0;
         chargeRate = 1;
-        resources = 100;
+        resources = 0;
         resourceRate = 0;
         water = 10;
         stationComponents = new HashSet<StationComponent>();
@@ -164,5 +165,13 @@ public class StateManager {
     public void addAutoCharge(int amount) {
         autoCharge = true;
         autoChargeRate += amount;
+    }
+
+    public void increaseStationLevel() {
+        stationLevel++;
+    }
+
+    public int getStationLevel() {
+        return stationLevel;
     }
 }

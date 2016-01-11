@@ -230,11 +230,14 @@ public class MainControlScreen implements Screen, StateListener {
         buildConfirmButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 StationComponent selected = buildList.getSelected();
-                if ((game.getStateManager().has(selected) && selected.isUnique()) || selected.getResourceCost() > game.getStateManager().getResources()) {
+                if ((game.getStateManager().has(selected) && selected.isUnique()) ||
+                        selected.getResourceCost() > game.getStateManager().getResources() ||
+                        selected.getChargeCost() > game.getStateManager().getCharge()) {
                     btnErrorSfx.play();
                 } else {
                     Gdx.app.log("Build", "building " + selected);
                     game.getStateManager().spendResources(selected.getResourceCost());
+                    game.getStateManager().spendCharge(selected.getChargeCost());
                     build(selected);
                     btnPressSfx.play();
                 }
@@ -262,16 +265,20 @@ public class MainControlScreen implements Screen, StateListener {
 
     private void build(StationComponent component) {
         game.getStateManager().add(component);
-        if(component.isUnique()) componentArray.removeValue(component, false);
-        buildList.setItems(componentArray);
+        if(component.isUnique()) {
+            componentArray.removeValue(component, false);
+            buildList.setItems(componentArray);
+        }
         if (component.hasWidget()) {
             mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
         }
     }
 
     private void restore(StationComponent component) {
-        if(component.isUnique()) componentArray.removeValue(component, false);
-        buildList.setItems(componentArray);
+        if(component.isUnique()) {
+            componentArray.removeValue(component, false);
+            buildList.setItems(componentArray);
+        }
         if (component.hasWidget()) {
             mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
         }
@@ -300,28 +307,29 @@ public class MainControlScreen implements Screen, StateListener {
         roverTable.setDebug(debug);
         Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
 
-        componentArray.add(new StationComponent("Rover", 100, 1, true, new Effect() {
+        componentArray.add(new StationComponent("Rover", 0, 10, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addResourceRate(1);
+                stateManager.increaseStationLevel();
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Finger Strength Training manual (+2 charge per press)", 50, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
             }
         }, null));
 
-        componentArray.add(new StationComponent("Improved refinery (double rover gather rate)", 200, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Improved refining (x2 rover gather rate)", 100, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.doubleGatherRate();
             }
         }, null));
 
-        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 0, false, new Effect() {
+        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 5, false, 1, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(1);
@@ -341,14 +349,11 @@ public class MainControlScreen implements Screen, StateListener {
 
     @Override
     public void onStateChanged(StateManager stateManager) {
-        if (mainTable.isVisible()) {
-            chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
-            resourceLabel.setText("Resources = " + game.getStateManager().getResources());
-            waterLabel.setText("Water = " + game.getStateManager().getWater());
-        }
-        else if (buildTable.isVisible()) {
-            buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
-        }
+        chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
+        resourceLabel.setText("Resources = " + game.getStateManager().getResources());
+        waterLabel.setText("Water = " + game.getStateManager().getWater());
+
+        buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
     }
 
     @Override
