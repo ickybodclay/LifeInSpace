@@ -12,10 +12,16 @@ public class StateManager {
     private int resourceRate;
     private int water;
 
+    private boolean autoCharge = false;
+    private boolean autoGather = false;
+
+    private int autoChargeRate = 0;
+    private int autoGatherRate = 0;
+
     private int waterDrainRate = 10; // # of cycles to drain 1 water
     private int waterDrainCounter = 1;
 
-    private int waterGatherRate = 3;
+    private int waterGatherRate = 1;
     private int oreGatherRate = 5;
 
     private float cycleTime = 1f;
@@ -28,6 +34,7 @@ public class StateManager {
         chargeRate = 1;
         resources = 100;
         resourceRate = 0;
+        water = 10;
         stationComponents = new HashSet<StationComponent>();
     }
 
@@ -90,8 +97,8 @@ public class StateManager {
     }
 
     public void add(StationComponent component) {
-        if (has(component)) return;
-        stationComponents.add(component);
+        if (has(component) && component.isUnique()) return;
+        if (!has(component)) stationComponents.add(component);
         component.getEffect().apply(this);
     }
 
@@ -112,8 +119,8 @@ public class StateManager {
             water--;
         }
 
-        resources += resourceRate;
-        charge += chargeRate;
+        if (autoGather) resources += autoGatherRate;
+        if (autoCharge) charge += autoChargeRate;
 
         if (stateListener != null) stateListener.onStateChanged(this);
 
@@ -152,5 +159,10 @@ public class StateManager {
 
     public int getOreGatherRate() {
         return oreGatherRate;
+    }
+
+    public void addAutoCharge(int amount) {
+        autoCharge = true;
+        autoChargeRate += amount;
     }
 }

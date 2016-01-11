@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -134,15 +135,26 @@ public class RoverScreen implements Screen, ContactListener {
                 p.setup(waterSprite, Pickup.Type.WATER);
                 break;
         }
-        p.setPosition(random.nextInt(800), random.nextInt(600));
+        randomizePosition(p);
         stage.addActor(p);
     }
 
     private void spawnObstacle() {
         Obstacle o = obstaclePool.obtain();
         o.setup();
-        o.setPosition(random.nextInt(800), random.nextInt(600));
+        randomizePosition(o);
         stage.addActor(o);
+    }
+
+    private final int WIDTH = 800;
+    private final int HEIGHT = 600;
+    private void randomizePosition(Actor actor) {
+        int xRange = WIDTH - (int)actor.getWidth();
+        int yRange = HEIGHT - (int)actor.getHeight();
+
+        actor.setPosition(
+            (actor.getWidth() / 2) + random.nextInt(xRange),
+            (actor.getHeight() / 2) + random.nextInt(yRange));
     }
 
     @Override

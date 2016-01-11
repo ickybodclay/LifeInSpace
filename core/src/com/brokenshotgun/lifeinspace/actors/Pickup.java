@@ -33,6 +33,9 @@ public class Pickup extends Actor implements Pool.Poolable {
         this.sprite = typeSprite;
         this.type = type;
 
+        setWidth(sprite.getWidth());
+        setHeight(sprite.getHeight());
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(100, 200);

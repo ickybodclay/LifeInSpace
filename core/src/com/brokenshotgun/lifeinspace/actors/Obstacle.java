@@ -19,6 +19,9 @@ public class Obstacle extends Actor implements Pool.Poolable {
     public Obstacle(Sprite sprite, World world) {
         this.sprite = sprite;
         this.world = world;
+
+        setWidth(sprite.getWidth());
+        setHeight(sprite.getHeight());
     }
 
     public void setup() {

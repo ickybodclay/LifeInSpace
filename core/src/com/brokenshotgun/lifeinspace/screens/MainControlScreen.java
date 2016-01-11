@@ -107,7 +107,7 @@ public class MainControlScreen implements Screen, StateListener {
         //    game.getStateManager().add(componentArray.first());
 
         for (StationComponent component : game.getStateManager().getStationComponents()) {
-            build(component);
+            restore(component);
         }
     }
 
@@ -230,7 +230,7 @@ public class MainControlScreen implements Screen, StateListener {
         buildConfirmButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 StationComponent selected = buildList.getSelected();
-                if (game.getStateManager().has(selected) || selected.getResourceCost() > game.getStateManager().getResources()) {
+                if ((game.getStateManager().has(selected) && selected.isUnique()) || selected.getResourceCost() > game.getStateManager().getResources()) {
                     btnErrorSfx.play();
                 } else {
                     Gdx.app.log("Build", "building " + selected);
@@ -262,7 +262,15 @@ public class MainControlScreen implements Screen, StateListener {
 
     private void build(StationComponent component) {
         game.getStateManager().add(component);
-        componentArray.removeValue(component, false);
+        if(component.isUnique()) componentArray.removeValue(component, false);
+        buildList.setItems(componentArray);
+        if (component.hasWidget()) {
+            mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
+        }
+    }
+
+    private void restore(StationComponent component) {
+        if(component.isUnique()) componentArray.removeValue(component, false);
         buildList.setItems(componentArray);
         if (component.hasWidget()) {
             mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
@@ -292,24 +300,31 @@ public class MainControlScreen implements Screen, StateListener {
         roverTable.setDebug(debug);
         Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
 
-        componentArray.add(new StationComponent("Rover", 100, 1, new Effect() {
+        componentArray.add(new StationComponent("Rover", 100, 1, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addResourceRate(1);
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, new Effect() {
+        componentArray.add(new StationComponent("Finger Strength Training (2 charge per press)", 200, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
             }
         }, null));
 
-        componentArray.add(new StationComponent("Improved refinery (double rover gather rate)", 200, 0, new Effect() {
+        componentArray.add(new StationComponent("Improved refinery (double rover gather rate)", 200, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.doubleGatherRate();
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 0, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                stateManager.addAutoCharge(1);
             }
         }, null));
     }

@@ -8,11 +8,13 @@ public class StationComponent {
     private int energyCost;
     private Effect effect;
     private Widget widget;
+    private boolean unique;
 
-    public StationComponent(String name, int resourceCost, int energyCost, Effect effect, Widget widget) {
+    public StationComponent(String name, int resourceCost, int energyCost, boolean unique, Effect effect, Widget widget) {
         this.name = name;
         this.resourceCost = resourceCost;
         this.energyCost = energyCost;
+        this.unique = unique;
         this.effect = effect;
         this.widget = widget;
     }
@@ -49,6 +51,10 @@ public class StationComponent {
         return widget;
     }
 
+    public boolean isUnique() {
+        return unique;
+    }
+
     @Override
     public String toString() {
         return name +
@@ -65,6 +71,7 @@ public class StationComponent {
 
         if (resourceCost != that.resourceCost) return false;
         if (energyCost != that.energyCost) return false;
+        if (unique != that.unique) return  false;
         if (!name.equals(that.name)) return false;
         return true;
     }
@@ -74,6 +81,7 @@ public class StationComponent {
         int result = name.hashCode();
         result = 31 * result + resourceCost;
         result = 31 * result + energyCost;
+        result = 31 * result + (unique ? 1 : 0);
         return result;
     }
 }
