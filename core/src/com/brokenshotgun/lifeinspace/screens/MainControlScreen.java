@@ -296,6 +296,7 @@ public class MainControlScreen implements Screen, StateListener {
         if (component.hasWidget()) {
             mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
         }
+        refreshSelectionBackground();
     }
 
     private void restore(StationComponent component) {
