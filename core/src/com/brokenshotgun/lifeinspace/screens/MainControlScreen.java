@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -55,6 +56,7 @@ public class MainControlScreen implements Screen, StateListener {
     private Label buildResourceLabel;
 
     private Table buildTable;
+    private List<StationComponent> buildList;
 
     private final String spriteAtlasFile = "sprites.atlas";
     private TextureAtlas spriteAtlas;
@@ -111,6 +113,8 @@ public class MainControlScreen implements Screen, StateListener {
         }
     }
 
+    private Drawable itemEnabledBg;
+    private Drawable itemDisabledBg;
     private void setupStyles() {
         chaLabelStyle = new Label.LabelStyle();
         chaLabelStyle.font = new BitmapFont();
@@ -133,11 +137,14 @@ public class MainControlScreen implements Screen, StateListener {
         buttonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
         buttonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
+        itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+
         listStyle = new List.ListStyle();
         listStyle.font = new BitmapFont();
         listStyle.fontColorUnselected = Color.WHITE;
         listStyle.fontColorSelected = Color.YELLOW;
-        listStyle.selection = new NinePatchDrawable(spriteAtlas.createPatch("button_normal")); // new BaseDrawable();
+        listStyle.selection = itemEnabledBg;
         listStyle.selection.setLeftWidth(10f);
         listStyle.selection.setTopHeight(10f);
         //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
@@ -201,6 +208,7 @@ public class MainControlScreen implements Screen, StateListener {
             public void changed(ChangeEvent event, Actor actor) {
                 mainTable.setVisible(false);
                 buildTable.setVisible(true);
+                refreshSelectionBackground();
                 btnPressSfx.play();
             }
         });
@@ -208,7 +216,6 @@ public class MainControlScreen implements Screen, StateListener {
         topMidGroup.row();
     }
 
-    private List<StationComponent> buildList;
     private void setupBuildScreen() {
         buildTable = new Table();
         buildTable.setFillParent(true);
@@ -216,6 +223,12 @@ public class MainControlScreen implements Screen, StateListener {
         stage.addActor(buildTable);
 
         buildList = new List<StationComponent>(listStyle);
+        buildList.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                refreshSelectionBackground();
+            }
+        });
         buildList.setItems(componentArray);
 
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
@@ -261,6 +274,17 @@ public class MainControlScreen implements Screen, StateListener {
         buildButtonGroup.addActor(buildConfirmButton);
         buildButtonGroup.addActor(backButton);
         buildTable.add(buildButtonGroup);
+    }
+
+    private void refreshSelectionBackground() {
+        StationComponent selected = buildList.getSelected();
+        if (selected.getResourceCost() > game.getStateManager().getResources() ||
+                selected.getChargeCost() > game.getStateManager().getCharge()) {
+            listStyle.selection = itemDisabledBg;
+        }
+        else {
+            listStyle.selection = itemEnabledBg;
+        }
     }
 
     private void build(StationComponent component) {
