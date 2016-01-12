@@ -311,7 +311,6 @@ public class MainControlScreen implements Screen, StateListener {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addResourceRate(1);
-                stateManager.increaseStationLevel();
             }
         }, roverWidget));
 
@@ -329,7 +328,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, null));
 
-        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 5, false, 1, new Effect() {
+        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 5, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(1);

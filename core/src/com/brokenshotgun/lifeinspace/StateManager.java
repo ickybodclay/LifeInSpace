@@ -11,7 +11,6 @@ public class StateManager {
     private int resources;
     private int resourceRate;
     private int water;
-    private int stationLevel = 0;
 
     private boolean autoCharge = false;
     private boolean autoGather = false;
@@ -165,13 +164,5 @@ public class StateManager {
     public void addAutoCharge(int amount) {
         autoCharge = true;
         autoChargeRate += amount;
-    }
-
-    public void increaseStationLevel() {
-        stationLevel++;
-    }
-
-    public int getStationLevel() {
-        return stationLevel;
     }
 }

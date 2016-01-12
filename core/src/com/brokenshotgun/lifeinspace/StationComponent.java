@@ -7,7 +7,6 @@ public class StationComponent {
     private Effect effect;
     private Widget widget;
     private boolean unique;
-    private int requiredLevel = -1;
 
     public StationComponent(String name, int resourceCost, int chargeCost, boolean unique, Effect effect, Widget widget) {
         this.name = name;
@@ -16,12 +15,6 @@ public class StationComponent {
         this.unique = unique;
         this.effect = effect;
         this.widget = widget;
-    }
-
-    public StationComponent(String name, int resourceCost, int chargeCost, boolean unique, int requiredLevel, Effect effect, Widget widget) {
-        this(name, resourceCost, chargeCost, unique, effect, widget);
-
-        this.requiredLevel = requiredLevel;
     }
 
     public String getName() {
@@ -58,14 +51,6 @@ public class StationComponent {
 
     public boolean isUnique() {
         return unique;
-    }
-
-    public boolean hasRequiredLevel() {
-        return requiredLevel != -1;
-    }
-
-    public int getRequiredLevel() {
-        return requiredLevel;
     }
 
     @Override
