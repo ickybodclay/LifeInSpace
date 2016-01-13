@@ -13,6 +13,7 @@ public class DesktopLauncher {
 		config.width = 800;
 		config.height = 600;
         config.resizable = false;
+		config.title = "Mars Base Simulator";
 
 		new LwjglApplication(new LifeInSpaceGame(), config);
 	}

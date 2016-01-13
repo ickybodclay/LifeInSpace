@@ -110,7 +110,7 @@ public class MainControlScreen implements Screen, StateListener {
             for (int j = 0; j < 3; ++j) {
                 int gridIndex = (i * 3) + j;
                 mainGrid[gridIndex] = new Container();
-                mainTable.add(mainGrid[gridIndex]).expand().fill();
+                mainTable.add(mainGrid[gridIndex]).minWidth(266f).minHeight(300f);
             }
 
             mainTable.row();
@@ -155,21 +155,21 @@ public class MainControlScreen implements Screen, StateListener {
         textButtonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
         textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
-        itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
-        itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+    itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+    itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
-        listStyle = new List.ListStyle();
-        listStyle.font = new BitmapFont();
-        listStyle.fontColorUnselected = Color.WHITE;
-        listStyle.fontColorSelected = Color.YELLOW;
-        listStyle.selection = itemEnabledBg;
-        listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
-        listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
-        //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+    listStyle = new List.ListStyle();
+    listStyle.font = new BitmapFont();
+    listStyle.fontColorUnselected = Color.WHITE;
+    listStyle.fontColorSelected = Color.YELLOW;
+    listStyle.selection = itemEnabledBg;
+    listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
+    listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
+    //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
 
-        scrollStyle = new ScrollPane.ScrollPaneStyle();
-        scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
-    }
+    scrollStyle = new ScrollPane.ScrollPaneStyle();
+    scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+}
 
     private void setupChargeWidget() {
         Table topMidGroup = new Table();
@@ -214,7 +214,7 @@ public class MainControlScreen implements Screen, StateListener {
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
-        buildTable.add(scrollPane).height(260f).minWidth(400f);
+        buildTable.add(scrollPane).height(200f).width(266f);
 
         buildResourceLabel = new Label("Resources = 0", resLabelStyle);
 
@@ -319,21 +319,21 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger brace (+2 charge per press)", 50, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Finger brace (+2C per press)", 50, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
             }
         }, null));
 
-        componentArray.add(new StationComponent("Improved refining (x2 rover gather rate)", 100, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Improved refining (x2 gather)", 100, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.doubleGatherRate();
             }
         }, null));
 
-        componentArray.add(new StationComponent("Solar panel (+1 charge per second)", 10, 5, false, new Effect() {
+        componentArray.add(new StationComponent("Solar panel (+1C per second)", 10, 5, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(1);
