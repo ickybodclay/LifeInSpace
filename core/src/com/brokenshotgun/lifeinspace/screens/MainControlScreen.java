@@ -219,7 +219,8 @@ public class MainControlScreen implements Screen, StateListener {
         buildResourceLabel = new Label("Resources = 0", resLabelStyle);
 
         TextButton buildConfirmButton = new TextButton("Build", textButtonStyle);
-        buildConfirmButton.pad(10);
+        buildConfirmButton.pad(10f);
+        buildConfirmButton.padBottom(20f);
         buildConfirmButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 StationComponent selected = buildList.getSelected();
@@ -292,7 +293,8 @@ public class MainControlScreen implements Screen, StateListener {
 
         Table roverTable = new Table();
         TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", textButtonStyle);
-        roverUseButton.pad(10);
+        roverUseButton.pad(10f);
+        roverUseButton.padBottom(20f);
         roverUseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
