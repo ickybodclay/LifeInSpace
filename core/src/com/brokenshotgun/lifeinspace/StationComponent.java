@@ -56,8 +56,8 @@ public class StationComponent {
     @Override
     public String toString() {
         return name +
-            " resource cost = " + resourceCost +
-            ", charge needed to print = " + chargeCost;
+            "\n[" + resourceCost +
+            "R|" + chargeCost + "C]";
     }
 
     @Override

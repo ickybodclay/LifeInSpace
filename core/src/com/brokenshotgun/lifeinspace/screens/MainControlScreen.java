@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -56,11 +57,9 @@ public class MainControlScreen implements Screen, StateListener {
     private static final int BOTTOM_MID = 4;
     private static final int BOTTOM_RIGHT = 5;
     private Label chargeLabel;
-    private Label resourceLabel;
     private Label waterLabel;
     private Label buildResourceLabel;
 
-    private Table buildTable;
     private List<StationComponent> buildList;
 
     private final String spriteAtlasFile = "sprites.atlas";
@@ -92,19 +91,35 @@ public class MainControlScreen implements Screen, StateListener {
         btnErrorSfx = game.getAssetManager().get(btnErrorSfxFile);
         btnBackSfx = game.getAssetManager().get(btnBackSfxFile);
 
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-
         setupUI();
 
         game.getStateManager().register(this);
     }
 
     private void setupUI() {
+        stage = new Stage();
+        Gdx.input.setInputProcessor(stage);
+        mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.setDebug(debug);
+        stage.addActor(mainTable);
+
+        // setup grid for placeholder cells for station components
+        mainGrid = new Container[6];
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                int gridIndex = (i * 3) + j;
+                mainGrid[gridIndex] = new Container();
+                mainTable.add(mainGrid[gridIndex]).expand().fill();
+            }
+
+            mainTable.row();
+        }
+
         setupStyles();
         setupComponents();
-        setupMainScreen();
-        setupBuildScreen();
+        setupChargeWidget();
+        setupBuildWidget();
         setupWidgets();
     }
 
@@ -148,32 +163,15 @@ public class MainControlScreen implements Screen, StateListener {
         listStyle.fontColorUnselected = Color.WHITE;
         listStyle.fontColorSelected = Color.YELLOW;
         listStyle.selection = itemEnabledBg;
-        listStyle.selection.setLeftWidth(10f);
-        listStyle.selection.setTopHeight(10f);
+        listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
+        listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
         //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
 
         scrollStyle = new ScrollPane.ScrollPaneStyle();
         scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
     }
 
-    private void setupMainScreen() {
-        mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.setDebug(debug);
-        stage.addActor(mainTable);
-
-        // setup grid for placeholder cells for station components
-        mainGrid = new Container[6];
-        for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                int gridIndex = (i * 3) + j;
-                mainGrid[gridIndex] = new Container();
-                mainTable.add(mainGrid[gridIndex]).expand().fill();
-            }
-
-            mainTable.row();
-        }
-
+    private void setupChargeWidget() {
         Table topMidGroup = new Table();
         topMidGroup.setDebug(debug);
         mainGrid[TOP_MID].setActor(topMidGroup);
@@ -181,11 +179,6 @@ public class MainControlScreen implements Screen, StateListener {
         chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), chaLabelStyle);
         chargeLabel.setAlignment(Align.center, Align.center);
         topMidGroup.add(chargeLabel).width(150f);
-        topMidGroup.row();
-
-        resourceLabel = new Label("Resources = " + game.getStateManager().getResources(), resLabelStyle);
-        resourceLabel.setAlignment(Align.center, Align.center);
-        topMidGroup.add(resourceLabel).width(150f);
         topMidGroup.row();
 
         waterLabel = new Label("Water = " + game.getStateManager().getWater(), watLabelStyle);
@@ -203,27 +196,9 @@ public class MainControlScreen implements Screen, StateListener {
 
         topMidGroup.add(chargeButton).expandX().fill().padBottom(15f);
         topMidGroup.row();
-
-        final TextButton buildButton = new TextButton("Build", textButtonStyle);
-        buildButton.pad(10);
-        buildButton.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                mainTable.setVisible(false);
-                buildTable.setVisible(true);
-                refreshSelectionBackground();
-                btnPressSfx.play();
-            }
-        });
-        topMidGroup.add(buildButton).expandX().fill();
-        topMidGroup.row();
     }
 
-    private void setupBuildScreen() {
-        buildTable = new Table();
-        buildTable.setFillParent(true);
-        buildTable.setVisible(false);
-        stage.addActor(buildTable);
-
+    private void setupBuildWidget() {
         buildList = new List<StationComponent>(listStyle);
         buildList.addListener(new ChangeListener() {
             @Override
@@ -233,12 +208,15 @@ public class MainControlScreen implements Screen, StateListener {
         });
         buildList.setItems(componentArray);
 
+        Table buildTable = new Table();
+        mainGrid[TOP_RIGHT].setActor(buildTable);
+
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
-        buildTable.add(scrollPane).expand().fill().pad(10);
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.setScrollingDisabled(true, false);
+        buildTable.add(scrollPane).height(260f).minWidth(400f);
 
-        buildTable.row();
-
-        buildResourceLabel = new Label("Resources = 0", chaLabelStyle);
+        buildResourceLabel = new Label("Resources = 0", resLabelStyle);
 
         TextButton buildConfirmButton = new TextButton("Build", textButtonStyle);
         buildConfirmButton.pad(10);
@@ -259,37 +237,31 @@ public class MainControlScreen implements Screen, StateListener {
             }
         });
 
-        TextButton backButton = new TextButton("Back", textButtonStyle);
-        backButton.pad(10);
-        backButton.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                mainTable.setVisible(true);
-                buildTable.setVisible(false);
-                btnBackSfx.play();
-            }
-        });
         HorizontalGroup buildButtonGroup = new HorizontalGroup();
         buildButtonGroup.space(100f);
         buildButtonGroup.padTop(10f);
         buildButtonGroup.padBottom(10f);
         buildButtonGroup.addActor(buildResourceLabel);
         buildButtonGroup.addActor(buildConfirmButton);
-        buildButtonGroup.addActor(backButton);
+
+        buildTable.row();
         buildTable.add(buildButtonGroup);
     }
 
+    private final float LIST_PAD_LEFT = 10f;
+    private final float LIST_PAD_BOTTOM = 40f;
     private void refreshSelectionBackground() {
         StationComponent selected = buildList.getSelected();
         if (selected.getResourceCost() > game.getStateManager().getResources() ||
                 selected.getChargeCost() > game.getStateManager().getCharge()) {
             listStyle.selection = itemDisabledBg;
-            listStyle.selection.setLeftWidth(10f);
-            listStyle.selection.setTopHeight(10f);
+            listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
+            listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
         }
         else {
             listStyle.selection = itemEnabledBg;
-            listStyle.selection.setLeftWidth(10f);
-            listStyle.selection.setTopHeight(10f);
+            listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
+            listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
         }
     }
 
@@ -345,7 +317,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger Strength Training manual (+2 charge per press)", 50, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Finger brace (+2 charge per press)", 50, 0, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
@@ -365,6 +337,48 @@ public class MainControlScreen implements Screen, StateListener {
                 stateManager.addAutoCharge(1);
             }
         }, null));
+
+        componentArray.add(new StationComponent("Test Item #1", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Test Item #2", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Test Item #3", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Test Item #4", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Test Item #5", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
+
+        componentArray.add(new StationComponent("Test Item #6", 1337, 666, false, new Effect() {
+            @Override
+            public void apply(StateManager stateManager) {
+                Gdx.app.log("MainControlScreen", "test");
+            }
+        }, null));
     }
 
     @Override
@@ -380,9 +394,7 @@ public class MainControlScreen implements Screen, StateListener {
     @Override
     public void onStateChanged(StateManager stateManager) {
         chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
-        resourceLabel.setText("Resources = " + game.getStateManager().getResources());
         waterLabel.setText("Water = " + game.getStateManager().getWater());
-
         buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
     }
 

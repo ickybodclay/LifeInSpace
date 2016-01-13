@@ -92,7 +92,7 @@ public class Rover extends Actor {
             else
                 dir.nor();
         }
-        
+
         body.applyForceToCenter(dir.x * speed, dir.y * speed, true);
     }
 }
