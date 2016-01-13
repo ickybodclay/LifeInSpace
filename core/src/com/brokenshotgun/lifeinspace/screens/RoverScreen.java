@@ -20,6 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
@@ -35,8 +38,10 @@ public class RoverScreen implements Screen, ContactListener {
     private final Color martianRed = Color.valueOf("ac3232");
     private final String spriteAtlasFile = "sprites.atlas";
     private final String pickupSfxFile = "sfx/pickup.wav";
+    private final String btnBackSfxFile = "sfx/button_back.wav";
     private TextureAtlas spriteAtlas;
     private Sound pickupSfx;
+    private Sound btnBackSfx;
     private Sprite rockSprite;
     private Sprite oreSprite;
     private Sprite waterSprite;
@@ -75,10 +80,12 @@ public class RoverScreen implements Screen, ContactListener {
     public void show() {
         game.getAssetManager().load(spriteAtlasFile, TextureAtlas.class);
         game.getAssetManager().load(pickupSfxFile, Sound.class);
+        game.getAssetManager().load(btnBackSfxFile, Sound.class);
         game.getAssetManager().finishLoading();
 
         spriteAtlas = game.getAssetManager().get(spriteAtlasFile);
         pickupSfx = game.getAssetManager().get(pickupSfxFile);
+        btnBackSfx = game.getAssetManager().get(btnBackSfxFile);
 
         rockSprite = spriteAtlas.createSprite("rock");
         oreSprite = spriteAtlas.createSprite("ore");
@@ -126,7 +133,28 @@ public class RoverScreen implements Screen, ContactListener {
         statusLabel = new Label("[Water : 0] [Ore : 0]", labelStyle);
         ui.add(statusLabel).pad(10).expand().bottom().left();
 
-        ui.add(new Label("(RMB) Return", labelStyle)).pad(10).expand().bottom().right();
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.overFontColor = Color.YELLOW;
+        textButtonStyle.downFontColor = Color.DARK_GRAY;
+        textButtonStyle.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        textButtonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
+        textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+
+        TextButton returnButton = new TextButton("Return", textButtonStyle);
+        returnButton.pad(10f);
+        returnButton.padBottom(20f);
+        returnButton.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                game.getStateManager().addOre(ore);
+                game.getStateManager().addWater(water);
+                game.setScreen(new MainControlScreen(game));
+                btnBackSfx.play();
+            }
+        });
+
+        ui.add(returnButton).pad(10).expand().bottom().right();
 
         //debugRenderer = new Box2DDebugRenderer();
     }
@@ -175,13 +203,6 @@ public class RoverScreen implements Screen, ContactListener {
         updateUI();
 
         //debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
-
-        // FIXME for testing only, screen will go back when charge is depleted?
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            game.getStateManager().addOre(ore);
-            game.getStateManager().addWater(water);
-            game.setScreen(new MainControlScreen(game));
-        }
     }
 
     private void cleanupWorld() {

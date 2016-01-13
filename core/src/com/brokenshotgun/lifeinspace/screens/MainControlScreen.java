@@ -214,7 +214,7 @@ public class MainControlScreen implements Screen, StateListener {
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
-        buildTable.add(scrollPane).height(200f).width(266f);
+        buildTable.add(scrollPane).height(230f).width(266f);
 
         buildResourceLabel = new Label("Resources = 0", resLabelStyle);
 
