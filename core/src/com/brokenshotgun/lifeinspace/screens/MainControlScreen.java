@@ -216,7 +216,7 @@ public class MainControlScreen implements Screen, StateListener {
         scrollPane.setScrollingDisabled(true, false);
         buildTable.add(scrollPane).height(230f).width(266f);
 
-        buildResourceLabel = new Label("Resources = 0", resLabelStyle);
+        buildResourceLabel = new Label("Resources = " + game.getStateManager().getResources(), resLabelStyle);
 
         TextButton buildConfirmButton = new TextButton("Build", textButtonStyle);
         buildConfirmButton.pad(10f);
