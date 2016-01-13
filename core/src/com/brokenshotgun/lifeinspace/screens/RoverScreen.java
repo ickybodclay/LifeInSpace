@@ -61,6 +61,7 @@ public class RoverScreen implements Screen, ContactListener {
 
     private Table ui;
     private Label statusLabel;
+    private Label chargeLabel;
 
     private Rover rover;
 
@@ -131,7 +132,13 @@ public class RoverScreen implements Screen, ContactListener {
         labelStyle.font = new BitmapFont();
         labelStyle.fontColor = Color.WHITE;
         statusLabel = new Label("[Water : 0] [Ore : 0]", labelStyle);
-        ui.add(statusLabel).pad(10).expand().bottom().left();
+        ui.add(statusLabel).pad(10f).expand().bottom().left();
+
+        Label.LabelStyle chargeLabelStyle = new Label.LabelStyle();
+        chargeLabelStyle.font = new BitmapFont();
+        chargeLabelStyle.fontColor = Color.GOLD;
+        chargeLabel = new Label("Charge = 0", chargeLabelStyle);
+        ui.add(chargeLabel).pad(10f).expand().bottom();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
@@ -147,15 +154,14 @@ public class RoverScreen implements Screen, ContactListener {
         returnButton.padBottom(20f);
         returnButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                game.getStateManager().addOre(ore);
-                game.getStateManager().addWater(water);
-                game.setScreen(new MainControlScreen(game));
+                close();
                 btnBackSfx.play();
             }
         });
 
         ui.add(returnButton).pad(10).expand().bottom().right();
 
+        game.getStateManager().setDrainCharge(true);
         //debugRenderer = new Box2DDebugRenderer();
     }
 
@@ -186,8 +192,8 @@ public class RoverScreen implements Screen, ContactListener {
         int yRange = HEIGHT - (int)actor.getHeight();
 
         actor.setPosition(
-            (actor.getWidth() / 2) + random.nextInt(xRange),
-            (actor.getHeight() / 2) + random.nextInt(yRange));
+                (actor.getWidth() / 2) + random.nextInt(xRange),
+                (actor.getHeight() / 2) + random.nextInt(yRange));
     }
 
     @Override
@@ -202,26 +208,48 @@ public class RoverScreen implements Screen, ContactListener {
         stage.draw();
         updateUI();
 
+        if (game.getStateManager().getCharge() <= 0) {
+            close();
+        }
+
         //debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
     }
 
     private void cleanupWorld() {
         world.getBodies(bodyArray);
+        int freed = 0;
         for (int i = 0; i < bodyArray.size; ++i) {
             if (bodyArray.get(i).getUserData() instanceof Pickup) {
                 Pickup p = (Pickup)bodyArray.get(i).getUserData();
                 if (p.isFlaggedForDelete()) {
                     p.delete();
                     pickupPool.free(p);
+                    freed++;
                 }
             }
         }
+
+        for (int i = 0; i < freed; ++i)
+            spawnPickup();
     }
 
     private void updateUI() {
         statusLabel.setText(String.format("[Water : %d] [Ore : %d]",
                 water * game.getStateManager().getWaterGatherRate(),
                 ore * game.getStateManager().getOreGatherRate()));
+
+        chargeLabel.setText(String.format("Charge = %d", game.getStateManager().getCharge()));
+    }
+
+    private boolean isClosing = false;
+    private void close() {
+        if (isClosing) return;
+
+        game.getStateManager().setDrainCharge(false);
+        game.getStateManager().addOre(ore);
+        game.getStateManager().addWater(water);
+        game.setScreen(new MainControlScreen(game));
+        isClosing = true;
     }
 
     @Override

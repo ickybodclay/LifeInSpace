@@ -14,6 +14,7 @@ public class StateManager {
 
     private boolean autoCharge = false;
     private boolean autoGather = false;
+    private boolean drainCharge = false;
 
     private int autoChargeRate = 0;
     private int autoGatherRate = 0;
@@ -121,6 +122,7 @@ public class StateManager {
 
         if (autoGather) resources += autoGatherRate;
         if (autoCharge) charge += autoChargeRate;
+        if (drainCharge) charge--;
 
         if (stateListener != null) stateListener.onStateChanged(this);
 
@@ -164,5 +166,9 @@ public class StateManager {
     public void addAutoCharge(int amount) {
         autoCharge = true;
         autoChargeRate += amount;
+    }
+
+    public void setDrainCharge(boolean drainCharge) {
+        this.drainCharge = drainCharge;
     }
 }
