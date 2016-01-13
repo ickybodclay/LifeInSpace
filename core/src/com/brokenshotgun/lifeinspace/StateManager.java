@@ -30,7 +30,7 @@ public class StateManager {
     private StateListener stateListener;
 
     public StateManager() {
-        charge = 0;
+        charge = 20; //= 0;
         chargeRate = 1;
         resources = 0;
         resourceRate = 0;

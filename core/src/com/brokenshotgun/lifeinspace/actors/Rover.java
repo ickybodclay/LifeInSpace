@@ -26,7 +26,7 @@ public class Rover extends Actor {
     private final Body body;
     private final World world;
 
-    private float speed = 200f;
+    private float speed = 400000f;
 
     private final Vector2 dir = new Vector2();
     private final Vector3 mousePos = new Vector3();
@@ -45,6 +45,7 @@ public class Rover extends Actor {
         bodyDef.fixedRotation = true;
 
         body = world.createBody(bodyDef);
+        body.setLinearDamping(3f);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
@@ -91,7 +92,7 @@ public class Rover extends Actor {
             else
                 dir.nor();
         }
-
-        body.setLinearVelocity(dir.x * speed, dir.y * speed);
+        
+        body.applyForceToCenter(dir.x * speed, dir.y * speed, true);
     }
 }
