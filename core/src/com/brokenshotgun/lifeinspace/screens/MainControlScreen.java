@@ -44,6 +44,8 @@ public class MainControlScreen implements Screen, StateListener {
     private Button.ButtonStyle chargeButtonStyle;
     private List.ListStyle listStyle;
     private ScrollPane.ScrollPaneStyle scrollStyle;
+    private Drawable itemEnabledBg;
+    private Drawable itemDisabledBg;
 
     private Table mainTable;
     private Container[] mainGrid;
@@ -107,17 +109,11 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void setupWidgets() {
-        // FIXME for testing only
-        //if (!game.getStateManager().has(componentArray.first()))
-        //    game.getStateManager().add(componentArray.first());
-
         for (StationComponent component : game.getStateManager().getStationComponents()) {
             restore(component);
         }
     }
 
-    private Drawable itemEnabledBg;
-    private Drawable itemDisabledBg;
     private void setupStyles() {
         chaLabelStyle = new Label.LabelStyle();
         chaLabelStyle.font = new BitmapFont();
@@ -287,9 +283,13 @@ public class MainControlScreen implements Screen, StateListener {
         if (selected.getResourceCost() > game.getStateManager().getResources() ||
                 selected.getChargeCost() > game.getStateManager().getCharge()) {
             listStyle.selection = itemDisabledBg;
+            listStyle.selection.setLeftWidth(10f);
+            listStyle.selection.setTopHeight(10f);
         }
         else {
             listStyle.selection = itemEnabledBg;
+            listStyle.selection.setLeftWidth(10f);
+            listStyle.selection.setTopHeight(10f);
         }
     }
 
