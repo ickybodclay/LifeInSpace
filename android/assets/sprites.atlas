@@ -1,12 +1,12 @@
 
 sprites.png
-size: 256,64
+size: 512,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 button_disabled
   rotate: false
-  xy: 138, 4
+  xy: 262, 36
   size: 30, 30
   split: 3, 3, 3, 15
   orig: 30, 30
@@ -14,7 +14,7 @@ button_disabled
   index: -1
 button_normal
   rotate: false
-  xy: 170, 4
+  xy: 70, 4
   size: 30, 30
   split: 3, 3, 3, 15
   orig: 30, 30
@@ -22,10 +22,24 @@ button_normal
   index: -1
 button_pressed
   rotate: false
-  xy: 202, 4
+  xy: 330, 70
   size: 30, 30
   split: 3, 3, 3, 15
   orig: 30, 30
+  offset: 0, 0
+  index: -1
+charge_button_normal
+  rotate: false
+  xy: 2, 36
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+charge_button_pressed
+  rotate: false
+  xy: 132, 36
+  size: 128, 64
+  orig: 128, 64
   offset: 0, 0
   index: -1
 ore
@@ -37,21 +51,21 @@ ore
   index: -1
 rock
   rotate: false
-  xy: 36, 2
+  xy: 262, 68
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rover
   rotate: false
-  xy: 70, 2
+  xy: 36, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 water
   rotate: false
-  xy: 104, 2
+  xy: 296, 68
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

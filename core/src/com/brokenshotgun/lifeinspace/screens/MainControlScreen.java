@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.brokenshotgun.lifeinspace.Effect;
@@ -38,7 +40,8 @@ public class MainControlScreen implements Screen, StateListener {
     private Label.LabelStyle resLabelStyle;
     private Label.LabelStyle watLabelStyle;
 
-    private TextButton.TextButtonStyle buttonStyle;
+    private TextButton.TextButtonStyle textButtonStyle;
+    private Button.ButtonStyle chargeButtonStyle;
     private List.ListStyle listStyle;
     private ScrollPane.ScrollPaneStyle scrollStyle;
 
@@ -128,14 +131,18 @@ public class MainControlScreen implements Screen, StateListener {
         watLabelStyle.font = new BitmapFont();
         watLabelStyle.fontColor = Color.CYAN;
 
-        buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = new BitmapFont();
-        buttonStyle.fontColor = Color.WHITE;
-        buttonStyle.overFontColor = Color.YELLOW;
-        buttonStyle.downFontColor = Color.DARK_GRAY;
-        buttonStyle.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
-        buttonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
-        buttonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+        chargeButtonStyle = new Button.ButtonStyle();
+        chargeButtonStyle.up = new SpriteDrawable(spriteAtlas.createSprite("charge_button_normal"));
+        chargeButtonStyle.down = new SpriteDrawable(spriteAtlas.createSprite("charge_button_pressed"));
+
+        textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.overFontColor = Color.YELLOW;
+        textButtonStyle.downFontColor = Color.DARK_GRAY;
+        textButtonStyle.up = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        textButtonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
+        textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
         itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
         itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
@@ -190,8 +197,7 @@ public class MainControlScreen implements Screen, StateListener {
         topMidGroup.add(waterLabel).width(150f);
         topMidGroup.row();
 
-        TextButton chargeButton = new TextButton("Charge", buttonStyle);
-        chargeButton.pad(10);
+        Button chargeButton = new Button(chargeButtonStyle);
         chargeButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 game.getStateManager().addCharge();
@@ -199,10 +205,10 @@ public class MainControlScreen implements Screen, StateListener {
             }
         });
 
-        topMidGroup.add(chargeButton).expandX().fill();
+        topMidGroup.add(chargeButton).expandX().fill().padBottom(15f);
         topMidGroup.row();
 
-        final TextButton buildButton = new TextButton("Build", buttonStyle);
+        final TextButton buildButton = new TextButton("Build", textButtonStyle);
         buildButton.pad(10);
         buildButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
@@ -238,7 +244,7 @@ public class MainControlScreen implements Screen, StateListener {
 
         buildResourceLabel = new Label("Resources = 0", chaLabelStyle);
 
-        TextButton buildConfirmButton = new TextButton("Build", buttonStyle);
+        TextButton buildConfirmButton = new TextButton("Build", textButtonStyle);
         buildConfirmButton.pad(10);
         buildConfirmButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
@@ -257,7 +263,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         });
 
-        TextButton backButton = new TextButton("Back", buttonStyle);
+        TextButton backButton = new TextButton("Back", textButtonStyle);
         backButton.pad(10);
         backButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
@@ -313,7 +319,7 @@ public class MainControlScreen implements Screen, StateListener {
         componentArray = new Array<StationComponent>();
 
         Table roverTable = new Table();
-        TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", buttonStyle);
+        TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", textButtonStyle);
         roverUseButton.pad(10);
         roverUseButton.addListener(new ChangeListener() {
             @Override
