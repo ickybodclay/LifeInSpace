@@ -319,14 +319,14 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger brace (+2C per press)", 50, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Finger brace (+2C per press)", 50, 100, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
             }
         }, null));
 
-        componentArray.add(new StationComponent("Improved refining (x2 gather)", 100, 0, true, new Effect() {
+        componentArray.add(new StationComponent("Improved refining (x2 gather)", 100, 200, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.doubleGatherRate();
@@ -398,6 +398,7 @@ public class MainControlScreen implements Screen, StateListener {
         chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
         waterLabel.setText("Water = " + game.getStateManager().getWater());
         buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
+        refreshSelectionBackground();
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -57,7 +58,7 @@ public class RoverScreen implements Screen, ContactListener {
     private final int velocityIterations = 6;
     private final int positionIterations = 2;
 
-    //private Box2DDebugRenderer debugRenderer;
+    private Box2DDebugRenderer debugRenderer;
 
     private Table ui;
     private Label statusLabel;
@@ -162,7 +163,7 @@ public class RoverScreen implements Screen, ContactListener {
         ui.add(returnButton).pad(10).expand().bottom().right();
 
         game.getStateManager().setDrainCharge(true);
-        //debugRenderer = new Box2DDebugRenderer();
+        debugRenderer = new Box2DDebugRenderer();
     }
 
     private void spawnPickup() {
@@ -212,7 +213,7 @@ public class RoverScreen implements Screen, ContactListener {
             close();
         }
 
-        //debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
+        debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
     }
 
     private void cleanupWorld() {
