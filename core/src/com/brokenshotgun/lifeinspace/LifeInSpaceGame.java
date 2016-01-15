@@ -13,6 +13,7 @@ public class LifeInSpaceGame extends Game {
         stateManager = new StateManager();
         assetManager = new AssetManager();
         setScreen(new MainControlScreen(this));
+        //setScreen(new GameOverScreen(this));
     }
 
     public StateManager getStateManager() {

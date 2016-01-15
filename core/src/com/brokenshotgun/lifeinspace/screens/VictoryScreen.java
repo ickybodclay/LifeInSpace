@@ -53,7 +53,7 @@ public class VictoryScreen implements Screen {
             "You're a hero", labelStyle);
         victoryLabel.setAlignment(Align.center, Align.center);
 
-        ui.add(victoryLabel).center();
+        ui.add(victoryLabel).center().expand().fill();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
@@ -65,6 +65,7 @@ public class VictoryScreen implements Screen {
         textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
         TextButton restartButton = new TextButton("Restart", textButtonStyle);
+        restartButton.pad(10f);
         restartButton.padTop(10f);
         restartButton.padBottom(20f);
         restartButton.addListener(new ChangeListener() {

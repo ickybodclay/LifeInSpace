@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
 
 public class GameOverScreen implements Screen {
@@ -52,7 +53,7 @@ public class GameOverScreen implements Screen {
                         "Oops", labelStyle);
         gameOverLabel.setAlignment(Align.center, Align.center);
 
-        ui.add(gameOverLabel).center();
+        ui.add(gameOverLabel).center().expand().fill();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
@@ -64,6 +65,7 @@ public class GameOverScreen implements Screen {
         textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
         TextButton restartButton = new TextButton("Restart", textButtonStyle);
+        restartButton.pad(10f);
         restartButton.padTop(10f);
         restartButton.padBottom(20f);
         restartButton.addListener(new ChangeListener() {
