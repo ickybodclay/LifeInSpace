@@ -27,13 +27,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
+import com.brokenshotgun.lifeinspace.StateListener;
+import com.brokenshotgun.lifeinspace.StateManager;
 import com.brokenshotgun.lifeinspace.actors.Obstacle;
 import com.brokenshotgun.lifeinspace.actors.Pickup;
 import com.brokenshotgun.lifeinspace.actors.Rover;
 
 import java.util.Random;
 
-public class RoverScreen implements Screen, ContactListener {
+public class RoverScreen implements Screen, ContactListener, StateListener {
     private final LifeInSpaceGame game;
     private boolean debug = false;
 
@@ -208,7 +210,6 @@ public class RoverScreen implements Screen, ContactListener {
         cleanupWorld();
         stage.act(delta);
         stage.draw();
-        updateUI();
 
         if (game.getStateManager().getCharge() <= 0) {
             close();
@@ -235,12 +236,24 @@ public class RoverScreen implements Screen, ContactListener {
             spawnPickup();
     }
 
+    @Override
+    public void onStateChanged(StateManager stateManager) {
+        updateUI();
+        checkForGameOver();
+    }
+
     private void updateUI() {
         statusLabel.setText(
             "[Water : " + (water * game.getStateManager().getWaterGatherRate()) + "] " +
-            "[Ore : " + (ore * game.getStateManager().getOreGatherRate())+ "]");
+            "[Ore : " + (ore * game.getStateManager().getOreGatherRate()) + "]");
 
         chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
+    }
+
+    private void checkForGameOver() {
+        if (game.getStateManager().getWater() <= 0) {
+            game.setScreen(new GameOverScreen(game));
+        }
     }
 
     private boolean isClosing = false;
