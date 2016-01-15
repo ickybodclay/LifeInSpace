@@ -312,6 +312,8 @@ public class MainControlScreen implements Screen, StateListener {
         roverTable.setDebug(debug);
         Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
 
+        // component exponential cost increase 499.075 e^(2.30285 x)
+
         componentArray.add(new StationComponent("Rover", 0, 10, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {

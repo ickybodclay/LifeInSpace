@@ -5,7 +5,6 @@
 	<inherits name='com.badlogic.gdx.physics.box2d.box2d-gwt' />
 	<inherits name='Box2DLights' />
 	<inherits name='com.badlogic.ashley_gwt' />
-	<inherits name='com.badlogic.gdx.controllers.controllers-gwt' />
 
 	<inherits name='LifeInSpaceGame' />
 	<entry-point class='com.brokenshotgun.lifeinspace.client.HtmlLauncher' />

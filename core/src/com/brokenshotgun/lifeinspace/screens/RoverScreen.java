@@ -235,11 +235,11 @@ public class RoverScreen implements Screen, ContactListener {
     }
 
     private void updateUI() {
-        statusLabel.setText(String.format("[Water : %d] [Ore : %d]",
-                water * game.getStateManager().getWaterGatherRate(),
-                ore * game.getStateManager().getOreGatherRate()));
+        statusLabel.setText(
+            "[Water : " + (water * game.getStateManager().getWaterGatherRate()) + "] " +
+            "[Ore : " + (ore * game.getStateManager().getOreGatherRate())+ "]");
 
-        chargeLabel.setText(String.format("Charge = %d", game.getStateManager().getCharge()));
+        chargeLabel.setText("Charge = " + game.getStateManager().getCharge());
     }
 
     private boolean isClosing = false;
