@@ -12,18 +12,18 @@ public class StateManager {
     private int resourceRate;
     private int water;
 
-    private boolean autoCharge = false;
-    private boolean autoGather = false;
-    private boolean drainCharge = false;
+    private boolean autoCharge;
+    private boolean autoGather;
+    private boolean drainCharge;
 
-    private int autoChargeRate = 0;
-    private int autoGatherRate = 0;
+    private int autoChargeRate;
+    private int autoGatherRate;
 
-    private int waterDrainRate = 10; // # of cycles to drain 1 water
-    private int waterDrainCounter = 1;
+    private int waterDrainRate; // # of cycles to drain 1 water
+    private int waterDrainCounter;
 
-    private int waterGatherRate = 1;
-    private int oreGatherRate = 5;
+    private int waterGatherRate;
+    private int oreGatherRate;
 
     private float cycleTime = 1f;
     private float updateTime = 0f;
@@ -31,12 +31,26 @@ public class StateManager {
     private StateListener stateListener;
 
     public StateManager() {
+        stationComponents = new HashSet<StationComponent>();
+        reset();
+    }
+
+    public void reset() {
         charge = 20; //= 0;
         chargeRate = 1;
         resources = 0;
         resourceRate = 0;
         water = 10;
-        stationComponents = new HashSet<StationComponent>();
+        autoCharge = false;
+        autoGather = false;
+        drainCharge = false;
+        autoChargeRate = 0;
+        autoGatherRate = 0;
+        waterDrainRate = 10;
+        waterDrainCounter = 1;
+        waterGatherRate = 1;
+        oreGatherRate = 5;
+        stationComponents.clear();
     }
 
     public void addCharge() {

@@ -401,6 +401,13 @@ public class MainControlScreen implements Screen, StateListener {
         waterLabel.setText("Water = " + game.getStateManager().getWater());
         buildResourceLabel.setText("Resources = " + game.getStateManager().getResources());
         refreshSelectionBackground();
+        checkForGameOver();
+    }
+
+    private void checkForGameOver() {
+        if (game.getStateManager().getWater() <= 0) {
+            game.setScreen(new GameOverScreen(game));
+        }
     }
 
     @Override
