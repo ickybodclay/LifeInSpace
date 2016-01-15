@@ -141,7 +141,7 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
         Label.LabelStyle chargeLabelStyle = new Label.LabelStyle();
         chargeLabelStyle.font = new BitmapFont();
         chargeLabelStyle.fontColor = Color.GOLD;
-        chargeLabel = new Label("Charge = 0", chargeLabelStyle);
+        chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), chargeLabelStyle);
         ui.add(chargeLabel).pad(10f).expand().bottom();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
@@ -167,6 +167,8 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
 
         game.getStateManager().setDrainCharge(true);
         debugRenderer = new Box2DDebugRenderer();
+
+        game.getStateManager().register(this);
     }
 
     private void spawnPickup() {
@@ -210,6 +212,7 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
         cleanupWorld();
         stage.act(delta);
         stage.draw();
+        updateUI();
 
         if (game.getStateManager().getCharge() <= 0) {
             close();
@@ -238,7 +241,6 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
 
     @Override
     public void onStateChanged(StateManager stateManager) {
-        updateUI();
         checkForGameOver();
     }
 
@@ -284,7 +286,7 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
 
     @Override
     public void hide() {
-
+        game.getStateManager().register(null);
     }
 
     @Override

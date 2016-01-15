@@ -377,10 +377,10 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #6", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Spaceship (Return to Earth)", 10000, 1000000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
+                game.getStateManager().win();
             }
         }, null));
     }
@@ -407,6 +407,10 @@ public class MainControlScreen implements Screen, StateListener {
     private void checkForGameOver() {
         if (game.getStateManager().getWater() <= 0) {
             game.setScreen(new GameOverScreen(game));
+        }
+
+        if (game.getStateManager().isVictorious()) {
+            game.setScreen(new VictoryScreen(game));
         }
     }
 

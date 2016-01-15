@@ -25,6 +25,8 @@ public class StateManager {
     private int waterGatherRate;
     private int oreGatherRate;
 
+    private boolean victorious;
+
     private float cycleTime = 1f;
     private float updateTime = 0f;
 
@@ -50,6 +52,7 @@ public class StateManager {
         waterDrainCounter = 1;
         waterGatherRate = 1;
         oreGatherRate = 5;
+        victorious = false;
         stationComponents.clear();
     }
 
@@ -136,7 +139,7 @@ public class StateManager {
 
         if (autoGather) resources += autoGatherRate;
         if (autoCharge) charge += autoChargeRate;
-        if (drainCharge) charge--;
+        if (drainCharge) spendCharge(1);
 
         if (stateListener != null) stateListener.onStateChanged(this);
 
@@ -184,5 +187,21 @@ public class StateManager {
 
     public void setDrainCharge(boolean drainCharge) {
         this.drainCharge = drainCharge;
+    }
+
+    public void win() {
+        victorious = true;
+    }
+
+    public boolean isVictorious() {
+        return victorious;
+    }
+
+    public void save() {
+
+    }
+
+    public void load() {
+
     }
 }
