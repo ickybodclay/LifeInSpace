@@ -1,5 +1,8 @@
 package com.brokenshotgun.lifeinspace;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -198,10 +201,40 @@ public class StateManager {
     }
 
     public void save() {
+        Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
 
+        prefs.putInteger("charge", charge);
+        prefs.putInteger("chargeRate", chargeRate);
+        prefs.putInteger("resources", resources);
+        prefs.putInteger("resourceRate", resourceRate);
+        prefs.putInteger("water", water);
+        prefs.putBoolean("autoCharge", autoCharge);
+        prefs.putBoolean("autoGather", autoGather);
+        prefs.putBoolean("drainCharge", drainCharge);
+        prefs.putInteger("autoChargeRate", autoChargeRate);
+        prefs.putInteger("autoGatherRate", autoGatherRate);
+        prefs.putInteger("waterDrainRate", waterDrainRate);
+        prefs.putInteger("waterDrainCounter", waterDrainCounter);
+        prefs.putInteger("waterGatherRate", waterGatherRate);
+        prefs.putInteger("oreGatherRate", oreGatherRate);
     }
 
     public void load() {
+        Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
 
+        charge = prefs.getInteger("charge");
+        chargeRate = prefs.getInteger("chargeRate");
+        resources = prefs.getInteger("resources");
+        resourceRate = prefs.getInteger("resourceRate");
+        water = prefs.getInteger("water");
+        autoCharge = prefs.getBoolean("autoCharge");
+        autoGather = prefs.getBoolean("autoGather");
+        drainCharge = prefs.getBoolean("drainCharge");
+        autoChargeRate = prefs.getInteger("autoChargeRate");
+        autoGatherRate = prefs.getInteger("autoGatherRate");
+        waterDrainRate = prefs.getInteger("waterDrainRate");
+        waterDrainCounter = prefs.getInteger("waterDrainCounter");
+        waterGatherRate = prefs.getInteger("waterGatherRate");
+        oreGatherRate = prefs.getInteger("oreGatherRate");
     }
 }
