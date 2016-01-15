@@ -32,7 +32,7 @@ public class Obstacle extends Actor implements Pool.Poolable {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
+        shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() * 0.4f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

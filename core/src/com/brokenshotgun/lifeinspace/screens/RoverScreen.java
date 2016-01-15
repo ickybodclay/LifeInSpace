@@ -35,6 +35,7 @@ import java.util.Random;
 
 public class RoverScreen implements Screen, ContactListener {
     private final LifeInSpaceGame game;
+    private boolean debug = true;
 
     private final Color martianRed = Color.valueOf("ac3232");
     private final String spriteAtlasFile = "sprites.atlas";
@@ -213,7 +214,7 @@ public class RoverScreen implements Screen, ContactListener {
             close();
         }
 
-        debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
+        if (debug) debugRenderer.render(world, stage.getBatch().getProjectionMatrix());
     }
 
     private void cleanupWorld() {
