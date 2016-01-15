@@ -50,12 +50,9 @@ public class MainControlScreen implements Screen, StateListener {
 
     private Table mainTable;
     private Container[] mainGrid;
-    private static final int TOP_LEFT = 0;
-    private static final int TOP_MID = 1;
-    private static final int TOP_RIGHT = 2;
-    private static final int BOTTOM_LEFT = 3;
-    private static final int BOTTOM_MID = 4;
-    private static final int BOTTOM_RIGHT = 5;
+    private static final int LEFT = 0;
+    private static final int MID = 1;
+    private static final int RIGHT = 2;
     private Label chargeLabel;
     private Label waterLabel;
     private Label buildResourceLabel;
@@ -105,15 +102,10 @@ public class MainControlScreen implements Screen, StateListener {
         stage.addActor(mainTable);
 
         // setup grid for placeholder cells for station components
-        mainGrid = new Container[6];
-        for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                int gridIndex = (i * 3) + j;
-                mainGrid[gridIndex] = new Container();
-                mainTable.add(mainGrid[gridIndex]).minWidth(266f).minHeight(300f);
-            }
-
-            mainTable.row();
+        mainGrid = new Container[3];
+        for (int i = 0; i < 3; ++i) {
+            mainGrid[i] = new Container();
+            mainTable.add(mainGrid[i]).minWidth(266f).minHeight(600f);
         }
 
         setupStyles();
@@ -155,26 +147,26 @@ public class MainControlScreen implements Screen, StateListener {
         textButtonStyle.down = new NinePatchDrawable(spriteAtlas.createPatch("button_pressed"));
         textButtonStyle.disabled = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
-    itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
-    itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+        itemEnabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        itemDisabledBg = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
 
-    listStyle = new List.ListStyle();
-    listStyle.font = new BitmapFont();
-    listStyle.fontColorUnselected = Color.WHITE;
-    listStyle.fontColorSelected = Color.YELLOW;
-    listStyle.selection = itemEnabledBg;
-    listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
-    listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
-    //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
+        listStyle = new List.ListStyle();
+        listStyle.font = new BitmapFont();
+        listStyle.fontColorUnselected = Color.WHITE;
+        listStyle.fontColorSelected = Color.YELLOW;
+        listStyle.selection = itemEnabledBg;
+        listStyle.selection.setLeftWidth(LIST_PAD_LEFT);
+        listStyle.selection.setBottomHeight(LIST_PAD_BOTTOM);
+        //listStyle.background = new NinePatchDrawable(spriteAtlas.createPatch("button_normal"));
 
-    scrollStyle = new ScrollPane.ScrollPaneStyle();
-    scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
-}
+        scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScrollKnob = new NinePatchDrawable(spriteAtlas.createPatch("button_disabled"));
+    }
 
     private void setupChargeWidget() {
         Table topMidGroup = new Table();
         topMidGroup.setDebug(debug);
-        mainGrid[TOP_MID].setActor(topMidGroup);
+        mainGrid[MID].setActor(topMidGroup);
 
         chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), chaLabelStyle);
         chargeLabel.setAlignment(Align.center, Align.center);
@@ -209,12 +201,12 @@ public class MainControlScreen implements Screen, StateListener {
         buildList.setItems(componentArray);
 
         Table buildTable = new Table();
-        mainGrid[TOP_RIGHT].setActor(buildTable);
+        mainGrid[RIGHT].setActor(buildTable);
 
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
-        buildTable.add(scrollPane).height(230f).width(266f);
+        buildTable.add(scrollPane).height(530f).width(266f);
 
         buildResourceLabel = new Label("Resources = " + game.getStateManager().getResources(), resLabelStyle);
 
@@ -310,7 +302,7 @@ public class MainControlScreen implements Screen, StateListener {
         roverTable.add(roverUseButton);
 
         roverTable.setDebug(debug);
-        Widget roverWidget = new Widget(BOTTOM_MID, roverTable);
+        Widget roverWidget = new Widget(LEFT, roverTable);
 
         // component exponential cost increase 499.075 e^(2.30285 x)
 
@@ -342,42 +334,42 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #1", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Test Item #1", 1337, 666, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 Gdx.app.log("MainControlScreen", "test");
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #2", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Test Item #2", 1337, 666, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 Gdx.app.log("MainControlScreen", "test");
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #3", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Test Item #3", 1337, 666, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 Gdx.app.log("MainControlScreen", "test");
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #4", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Test Item #4", 1337, 666, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 Gdx.app.log("MainControlScreen", "test");
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #5", 1337, 666, false, new Effect() {
+        componentArray.add(new StationComponent("Test Item #5", 1337, 666, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 Gdx.app.log("MainControlScreen", "test");
             }
         }, null));
 
-        componentArray.add(new StationComponent("Spaceship (Return to Earth)", 10000, 1000000, false, new Effect() {
+        componentArray.add(new StationComponent("Spaceship (Return to Earth)", 10000, 1000000, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 game.getStateManager().win();
