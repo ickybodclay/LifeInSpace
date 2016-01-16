@@ -55,9 +55,14 @@ public class StationComponent {
 
     @Override
     public String toString() {
-        return name +
-            "\n[" + resourceCost +
-            "R|" + chargeCost + "C]";
+        StringBuilder builder = new StringBuilder(name);
+        if (resourceCost == 0) builder.append("\n[" + chargeCost + "C]");
+        else if (chargeCost == 0) builder.append("\n[" + resourceCost + "R]");
+        else {
+            builder.append("\n[" + resourceCost);
+            builder.append("R|" + chargeCost + "C]");
+        }
+        return builder.toString();
     }
 
     @Override

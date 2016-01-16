@@ -313,7 +313,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
-        componentArray.add(new StationComponent("Finger brace (+2C per press)", 50, 100, true, new Effect() {
+        componentArray.add(new StationComponent("Finger strength (+2C per press)", 0, 500, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
