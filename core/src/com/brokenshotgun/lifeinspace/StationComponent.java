@@ -59,8 +59,8 @@ public class StationComponent {
         if (resourceCost == 0) builder.append("\n[" + chargeCost + "C]");
         else if (chargeCost == 0) builder.append("\n[" + resourceCost + "R]");
         else {
-            builder.append("\n[" + resourceCost);
-            builder.append("R|" + chargeCost + "C]");
+            builder.append("\n[" + resourceCost + "R");
+            builder.append("|" + chargeCost + "C]");
         }
         return builder.toString();
     }

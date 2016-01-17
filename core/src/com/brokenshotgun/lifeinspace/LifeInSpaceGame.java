@@ -12,6 +12,9 @@ public class LifeInSpaceGame extends Game {
     public void create() {
         stateManager = new StateManager();
         assetManager = new AssetManager();
+
+        stateManager.load();
+
         setScreen(new MainControlScreen(this));
         //setScreen(new GameOverScreen(this));
     }
@@ -22,6 +25,13 @@ public class LifeInSpaceGame extends Game {
 
     public AssetManager getAssetManager() {
         return assetManager;
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+
+        if (stateManager != null) stateManager.save();
     }
 
     @Override

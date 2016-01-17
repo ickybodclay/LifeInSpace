@@ -331,6 +331,7 @@ public class MainControlScreen implements Screen, StateListener {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(1);
+                stateManager.incrementSolarPanelCount();
             }
         }, null));
 

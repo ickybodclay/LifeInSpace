@@ -200,12 +200,33 @@ public class StateManager {
         return victorious;
     }
 
+    int solarPanelCount = 0;
+    public void incrementSolarPanelCount() {
+        solarPanelCount++;
+    }
+
     public void save() {
         Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
 
-        prefs.putInteger("charge", charge);
+        Gdx.app.log("StateManager", "Saving...");
+
+        int tmpCharge = charge;
+        int tmpResources = resources;
+
+        // hack to get around station component not being serializable
+        for (StationComponent component : stationComponents) {
+            tmpCharge += component.getChargeCost();
+            tmpResources += component.getResourceCost();
+        }
+
+        if (solarPanelCount > 1) {
+            tmpCharge += 5 * (solarPanelCount - 1);
+            tmpResources += 10 * (solarPanelCount - 1);
+        }
+
+        prefs.putInteger("charge", tmpCharge);
         prefs.putInteger("chargeRate", chargeRate);
-        prefs.putInteger("resources", resources);
+        prefs.putInteger("resources", tmpResources);
         prefs.putInteger("resourceRate", resourceRate);
         prefs.putInteger("water", water);
         prefs.putBoolean("autoCharge", autoCharge);
@@ -217,24 +238,33 @@ public class StateManager {
         prefs.putInteger("waterDrainCounter", waterDrainCounter);
         prefs.putInteger("waterGatherRate", waterGatherRate);
         prefs.putInteger("oreGatherRate", oreGatherRate);
+        prefs.flush();
+
+        Gdx.app.log("StateManager", "Saved!");
     }
 
     public void load() {
         Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
 
-        charge = prefs.getInteger("charge");
-        chargeRate = prefs.getInteger("chargeRate");
-        resources = prefs.getInteger("resources");
-        resourceRate = prefs.getInteger("resourceRate");
-        water = prefs.getInteger("water");
-        autoCharge = prefs.getBoolean("autoCharge");
-        autoGather = prefs.getBoolean("autoGather");
-        drainCharge = prefs.getBoolean("drainCharge");
-        autoChargeRate = prefs.getInteger("autoChargeRate");
-        autoGatherRate = prefs.getInteger("autoGatherRate");
-        waterDrainRate = prefs.getInteger("waterDrainRate");
-        waterDrainCounter = prefs.getInteger("waterDrainCounter");
-        waterGatherRate = prefs.getInteger("waterGatherRate");
-        oreGatherRate = prefs.getInteger("oreGatherRate");
+        charge = prefs.getInteger("charge", 0);
+        chargeRate = prefs.getInteger("chargeRate", 1);
+        resources = prefs.getInteger("resources", 0);
+        resourceRate = prefs.getInteger("resourceRate", 0);
+        water = prefs.getInteger("water", 10);
+        autoCharge = prefs.getBoolean("autoCharge", false);
+        autoGather = prefs.getBoolean("autoGather", false);
+        drainCharge = prefs.getBoolean("drainCharge", false);
+        autoChargeRate = prefs.getInteger("autoChargeRate", 0);
+        autoGatherRate = prefs.getInteger("autoGatherRate", 0);
+        waterDrainRate = prefs.getInteger("waterDrainRate", 10);
+        waterDrainCounter = prefs.getInteger("waterDrainCounter", 1);
+        waterGatherRate = prefs.getInteger("waterGatherRate", 1);
+        oreGatherRate = prefs.getInteger("oreGatherRate", 5);
+    }
+
+    public void clearSave() {
+        Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
+        prefs.clear();
+        prefs.flush();
     }
 }
