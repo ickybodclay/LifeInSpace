@@ -122,7 +122,7 @@ public class RoverScreen implements Screen, ContactListener, StateListener {
             }
         };
 
-        for (int i = 0; i < 10; ++i) spawnPickup();
+        for (int i = 0; i < game.getStateManager().getResourceSpawnRate(); ++i) spawnPickup();
         for (int i = 0; i < 20; ++i) spawnObstacle();
 
         rover.toFront();

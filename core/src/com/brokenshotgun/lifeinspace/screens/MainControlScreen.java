@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -49,7 +48,7 @@ public class MainControlScreen implements Screen, StateListener {
     private Drawable itemDisabledBg;
 
     private Table mainTable;
-    private Container[] mainGrid;
+    private Table[] mainGrid;
     private static final int LEFT = 0;
     private static final int MID = 1;
     private static final int RIGHT = 2;
@@ -102,9 +101,10 @@ public class MainControlScreen implements Screen, StateListener {
         stage.addActor(mainTable);
 
         // setup grid for placeholder cells for station components
-        mainGrid = new Container[3];
+        mainGrid = new Table[3];
         for (int i = 0; i < 3; ++i) {
-            mainGrid[i] = new Container();
+            mainGrid[i] = new Table();
+            mainGrid[i].setDebug(debug);
             mainTable.add(mainGrid[i]).minWidth(266f).minHeight(600f);
         }
 
@@ -164,19 +164,15 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void setupChargeWidget() {
-        Table topMidGroup = new Table();
-        topMidGroup.setDebug(debug);
-        mainGrid[MID].setActor(topMidGroup);
-
         chargeLabel = new Label("Charge = " + game.getStateManager().getCharge(), chaLabelStyle);
         chargeLabel.setAlignment(Align.center, Align.center);
-        topMidGroup.add(chargeLabel).width(150f);
-        topMidGroup.row();
+        mainGrid[MID].add(chargeLabel).expandX().fill();
+        mainGrid[MID].row();
 
         waterLabel = new Label("Water = " + game.getStateManager().getWater(), watLabelStyle);
         waterLabel.setAlignment(Align.center, Align.center);
-        topMidGroup.add(waterLabel).width(150f);
-        topMidGroup.row();
+        mainGrid[MID].add(waterLabel).expandX().fill();
+        mainGrid[MID].row();
 
         Button chargeButton = new Button(chargeButtonStyle);
         chargeButton.addListener(new ChangeListener() {
@@ -186,8 +182,8 @@ public class MainControlScreen implements Screen, StateListener {
             }
         });
 
-        topMidGroup.add(chargeButton).expandX().fill().padBottom(15f);
-        topMidGroup.row();
+        mainGrid[MID].add(chargeButton).padBottom(15f);
+        mainGrid[MID].row();
     }
 
     private void setupBuildWidget() {
@@ -201,7 +197,7 @@ public class MainControlScreen implements Screen, StateListener {
         buildList.setItems(componentArray);
 
         Table buildTable = new Table();
-        mainGrid[RIGHT].setActor(buildTable);
+        mainGrid[RIGHT].add(buildTable);
 
         ScrollPane scrollPane = new ScrollPane(buildList, scrollStyle);
         scrollPane.setFadeScrollBars(false);
@@ -265,7 +261,7 @@ public class MainControlScreen implements Screen, StateListener {
             buildList.setItems(componentArray);
         }
         if (component.hasWidget()) {
-            mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
+            addWidget(component);
         }
         refreshSelectionBackground();
     }
@@ -276,15 +272,19 @@ public class MainControlScreen implements Screen, StateListener {
             buildList.setItems(componentArray);
         }
         if (component.hasWidget()) {
-            mainGrid[component.getWidget().position].setActor(component.getWidget().widget);
+            addWidget(component);
         }
+    }
+
+    private void addWidget(StationComponent component) {
+        mainGrid[component.getWidget().position].add(component.getWidget().widget).expandX().fill();
+        mainGrid[component.getWidget().position].row();
     }
 
     private void setupComponents() {
         componentArray = new Array<StationComponent>();
 
-        Table roverTable = new Table();
-        TextButton roverUseButton = new TextButton("Use Rover (costs 10 charge)", textButtonStyle);
+        TextButton roverUseButton = new TextButton("Use Rover (-10C)", textButtonStyle);
         roverUseButton.pad(10f);
         roverUseButton.padBottom(20f);
         roverUseButton.addListener(new ChangeListener() {
@@ -299,12 +299,8 @@ public class MainControlScreen implements Screen, StateListener {
                 }
             }
         });
-        roverTable.add(roverUseButton);
 
-        roverTable.setDebug(debug);
-        Widget roverWidget = new Widget(LEFT, roverTable);
-
-        // component exponential cost increase 499.075 e^(2.30285 x)
+        Widget roverWidget = new Widget(LEFT, roverUseButton);
 
         componentArray.add(new StationComponent("Rover", 0, 10, true, new Effect() {
             @Override
@@ -313,19 +309,31 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.fontColor = Color.GREEN;
+        labelStyle.font = new BitmapFont();
+
+        Label strengthLabel = new Label("[Finger strength]", labelStyle);
+        strengthLabel.setAlignment(Align.center, Align.center);
+        Widget strengthWidget = new Widget(MID, strengthLabel);
+
         componentArray.add(new StationComponent("Finger strength (+2C per press)", 0, 500, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addChargeRate(1);
             }
-        }, null));
+        }, strengthWidget));
+
+        Label refiningLabel = new Label("[Improved refining]", labelStyle);
+        refiningLabel.setAlignment(Align.center, Align.center);
+        Widget refiningWidget = new Widget(LEFT, refiningLabel);
 
         componentArray.add(new StationComponent("Improved refining (x2 gather)", 100, 200, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                stateManager.doubleGatherRate();
+                stateManager.increaseGatherRate(2);
             }
-        }, null));
+        }, refiningWidget));
 
         componentArray.add(new StationComponent("Solar panel (+1C per second)", 10, 5, false, new Effect() {
             @Override
@@ -335,38 +343,26 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #1", 1337, 666, true, new Effect() {
+        componentArray.add(new StationComponent("Solar tracking grid (+10C per second)", 1000, 2000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
+                stateManager.addAutoCharge(10);
+                stateManager.incrementSolarPanelCount();
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #2", 1337, 666, true, new Effect() {
+        componentArray.add(new StationComponent("Cybernetic Detector (Find Resource+)", 500, 3000, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
+                stateManager.increaseResourceSpawnRate();
             }
         }, null));
 
-        componentArray.add(new StationComponent("Test Item #3", 1337, 666, true, new Effect() {
+        componentArray.add(new StationComponent("Pneumatic Mining Arm (x5 gather)", 2000, 10000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
-            }
-        }, null));
-
-        componentArray.add(new StationComponent("Test Item #4", 1337, 666, true, new Effect() {
-            @Override
-            public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
-            }
-        }, null));
-
-        componentArray.add(new StationComponent("Test Item #5", 1337, 666, true, new Effect() {
-            @Override
-            public void apply(StateManager stateManager) {
-                Gdx.app.log("MainControlScreen", "test");
+                stateManager.increaseGatherRate(5);
+                stateManager.incrementPneumaticArmCount();
             }
         }, null));
 

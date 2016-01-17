@@ -170,9 +170,9 @@ public class StateManager {
         return water;
     }
 
-    public void doubleGatherRate() {
-        waterGatherRate *= 2;
-        oreGatherRate *= 2;
+    public void increaseGatherRate(int multiplier) {
+        waterGatherRate *= multiplier;
+        oreGatherRate *= multiplier;
     }
 
     public int getWaterGatherRate() {
@@ -200,9 +200,23 @@ public class StateManager {
         return victorious;
     }
 
-    int solarPanelCount = 0;
+    private int solarPanelCount = 0;
     public void incrementSolarPanelCount() {
         solarPanelCount++;
+    }
+
+    private int pneumaticArmCount = 0;
+    public void incrementPneumaticArmCount() {
+        pneumaticArmCount++;
+    }
+
+    public void increaseResourceSpawnRate() {
+        resourceSpawnRate *= 3;
+    }
+
+    private int resourceSpawnRate = 10;
+    public int getResourceSpawnRate() {
+        return resourceSpawnRate;
     }
 
     public void save() {
@@ -213,7 +227,8 @@ public class StateManager {
         int tmpCharge = charge;
         int tmpResources = resources;
 
-        // hack to get around station component not being serializable
+        // hack to get around station components not being serializable;
+        // when game state is restored, player will have to re-buy components
         for (StationComponent component : stationComponents) {
             tmpCharge += component.getChargeCost();
             tmpResources += component.getResourceCost();
@@ -224,20 +239,14 @@ public class StateManager {
             tmpResources += 10 * (solarPanelCount - 1);
         }
 
+        if (pneumaticArmCount > 1) {
+            tmpCharge += 5000 * (pneumaticArmCount - 1);
+            tmpResources += 10000 * (pneumaticArmCount - 1);
+        }
+
         prefs.putInteger("charge", tmpCharge);
-        prefs.putInteger("chargeRate", chargeRate);
         prefs.putInteger("resources", tmpResources);
-        prefs.putInteger("resourceRate", resourceRate);
         prefs.putInteger("water", water);
-        prefs.putBoolean("autoCharge", autoCharge);
-        prefs.putBoolean("autoGather", autoGather);
-        prefs.putBoolean("drainCharge", drainCharge);
-        prefs.putInteger("autoChargeRate", autoChargeRate);
-        prefs.putInteger("autoGatherRate", autoGatherRate);
-        prefs.putInteger("waterDrainRate", waterDrainRate);
-        prefs.putInteger("waterDrainCounter", waterDrainCounter);
-        prefs.putInteger("waterGatherRate", waterGatherRate);
-        prefs.putInteger("oreGatherRate", oreGatherRate);
         prefs.flush();
 
         Gdx.app.log("StateManager", "Saved!");
@@ -247,19 +256,8 @@ public class StateManager {
         Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
 
         charge = prefs.getInteger("charge", 0);
-        chargeRate = prefs.getInteger("chargeRate", 1);
         resources = prefs.getInteger("resources", 0);
-        resourceRate = prefs.getInteger("resourceRate", 0);
         water = prefs.getInteger("water", 10);
-        autoCharge = prefs.getBoolean("autoCharge", false);
-        autoGather = prefs.getBoolean("autoGather", false);
-        drainCharge = prefs.getBoolean("drainCharge", false);
-        autoChargeRate = prefs.getInteger("autoChargeRate", 0);
-        autoGatherRate = prefs.getInteger("autoGatherRate", 0);
-        waterDrainRate = prefs.getInteger("waterDrainRate", 10);
-        waterDrainCounter = prefs.getInteger("waterDrainCounter", 1);
-        waterGatherRate = prefs.getInteger("waterGatherRate", 1);
-        oreGatherRate = prefs.getInteger("oreGatherRate", 5);
     }
 
     public void clearSave() {
