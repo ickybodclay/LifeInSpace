@@ -171,9 +171,9 @@ public class StateManager {
         return water;
     }
 
-    public void increaseGatherRate(int multiplier) {
-        waterGatherRate *= multiplier;
-        oreGatherRate *= multiplier;
+    public void increaseGatherRate(int water, int ore) {
+        waterGatherRate += water;
+        oreGatherRate += ore;
     }
 
     public int getWaterGatherRate() {
@@ -281,5 +281,14 @@ public class StateManager {
 
     public int getPneumaticArmCount() {
         return pneumaticArmCount;
+    }
+
+    private int refiningLevel = 0;
+    public void incrementRefiningLevel() {
+        refiningLevel++;
+    }
+
+    public int getRefiningLevel() {
+        return refiningLevel;
     }
 }

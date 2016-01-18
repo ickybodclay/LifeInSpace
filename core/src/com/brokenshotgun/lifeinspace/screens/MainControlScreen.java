@@ -116,8 +116,11 @@ public class MainControlScreen implements Screen, StateListener {
     }
 
     private void setupWidgets() {
-        for (StationComponent component : game.getStateManager().getStationComponents()) {
-            restore(component);
+        StationComponent[] components = componentArray.toArray(StationComponent.class);
+        for (int i = 0; i < components.length; ++i) {
+            if (game.getStateManager().has(components[i])) {
+                restore(components[i]);
+            }
         }
     }
 
@@ -310,7 +313,7 @@ public class MainControlScreen implements Screen, StateListener {
         }, roverWidget));
 
         Label.LabelStyle widgetLabelStyle = new Label.LabelStyle();
-        widgetLabelStyle.fontColor = Color.GREEN;
+        widgetLabelStyle.fontColor = Color.PURPLE;
         widgetLabelStyle.font = new BitmapFont();
 
         Label strengthLabel = new Label("[Finger strength]", widgetLabelStyle);
@@ -324,18 +327,20 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, strengthWidget));
 
-        Label refiningLabel = new Label("[Improved refining]", widgetLabelStyle);
+        final Label refiningLabel = new Label("[Improved refining: " + game.getStateManager().getRefiningLevel() + "]", widgetLabelStyle);
         refiningLabel.setAlignment(Align.center, Align.center);
         Widget refiningWidget = new Widget(LEFT, refiningLabel);
 
-        componentArray.add(new StationComponent("Improved refining (x2 gather)", 100, 200, true, new Effect() {
+        componentArray.add(new StationComponent("Improved refining (+10R)", 100, 200, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                stateManager.increaseGatherRate(2);
+                stateManager.increaseGatherRate(0, 10);
+                stateManager.incrementRefiningLevel();
+                refiningLabel.setText("[Improved refining: " + game.getStateManager().getRefiningLevel() + "]");
             }
         }, refiningWidget));
 
-        final Label solarPanelLabel = new Label("[Solar Panel: 1]", widgetLabelStyle);
+        final Label solarPanelLabel = new Label("[Solar panel: " + game.getStateManager().getSolarPanelCount() + "]", widgetLabelStyle);
         solarPanelLabel.setAlignment(Align.center, Align.center);
         Widget solarPanelWidget = new Widget(LEFT, solarPanelLabel);
 
@@ -348,7 +353,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, solarPanelWidget));
 
-        final Label solarGridLabel = new Label("[Solar grid: 1]", widgetLabelStyle);
+        final Label solarGridLabel = new Label("[Solar grid: " + game.getStateManager().getSolarGridCount() + "]", widgetLabelStyle);
         solarGridLabel.setAlignment(Align.center, Align.center);
         Widget solarGridWidget = new Widget(LEFT, solarGridLabel);
 
@@ -372,14 +377,14 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, detectorWidget));
 
-        final Label miningArmLabel = new Label("[Pneumatic mining arm: 1]", widgetLabelStyle);
+        final Label miningArmLabel = new Label("[Pneumatic mining arm: " + game.getStateManager().getPneumaticArmCount() + "]", widgetLabelStyle);
         miningArmLabel.setAlignment(Align.center, Align.center);
         Widget miningArmWidget = new Widget(LEFT, miningArmLabel);
 
-        componentArray.add(new StationComponent("Pneumatic Mining Arm (x5 gather)", 2000, 10000, false, new Effect() {
+        componentArray.add(new StationComponent("Pneumatic Mining Arm (+100R)", 900, 15000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                stateManager.increaseGatherRate(5);
+                stateManager.increaseGatherRate(0, 100);
                 stateManager.incrementPneumaticArmCount();
                 miningArmLabel.setText("[Pneumatic mining arm: " + stateManager.getPneumaticArmCount() + "]");
             }
