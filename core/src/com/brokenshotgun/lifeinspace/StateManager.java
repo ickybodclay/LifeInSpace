@@ -34,6 +34,7 @@ public class StateManager {
     private float updateTime = 0f;
 
     private StateListener stateListener;
+    private int solarGridCount;
 
     public StateManager() {
         stationComponents = new HashSet<StationComponent>();
@@ -264,5 +265,21 @@ public class StateManager {
         Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
         prefs.clear();
         prefs.flush();
+    }
+
+    public int getSolarPanelCount() {
+        return solarPanelCount;
+    }
+
+    public int getSolarGridCount() {
+        return solarGridCount;
+    }
+
+    public void incrementSolarGridCount() {
+        solarGridCount++;
+    }
+
+    public int getPneumaticArmCount() {
+        return pneumaticArmCount;
     }
 }

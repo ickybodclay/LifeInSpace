@@ -309,11 +309,11 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, roverWidget));
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.fontColor = Color.GREEN;
-        labelStyle.font = new BitmapFont();
+        Label.LabelStyle widgetLabelStyle = new Label.LabelStyle();
+        widgetLabelStyle.fontColor = Color.GREEN;
+        widgetLabelStyle.font = new BitmapFont();
 
-        Label strengthLabel = new Label("[Finger strength]", labelStyle);
+        Label strengthLabel = new Label("[Finger strength]", widgetLabelStyle);
         strengthLabel.setAlignment(Align.center, Align.center);
         Widget strengthWidget = new Widget(MID, strengthLabel);
 
@@ -324,7 +324,7 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, strengthWidget));
 
-        Label refiningLabel = new Label("[Improved refining]", labelStyle);
+        Label refiningLabel = new Label("[Improved refining]", widgetLabelStyle);
         refiningLabel.setAlignment(Align.center, Align.center);
         Widget refiningWidget = new Widget(LEFT, refiningLabel);
 
@@ -335,36 +335,55 @@ public class MainControlScreen implements Screen, StateListener {
             }
         }, refiningWidget));
 
+        final Label solarPanelLabel = new Label("[Solar Panel: 1]", widgetLabelStyle);
+        solarPanelLabel.setAlignment(Align.center, Align.center);
+        Widget solarPanelWidget = new Widget(LEFT, solarPanelLabel);
+
         componentArray.add(new StationComponent("Solar panel (+1C per second)", 10, 5, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(1);
                 stateManager.incrementSolarPanelCount();
+                solarPanelLabel.setText("[Solar panel: " + stateManager.getSolarPanelCount() + "]");
             }
-        }, null));
+        }, solarPanelWidget));
+
+        final Label solarGridLabel = new Label("[Solar grid: 1]", widgetLabelStyle);
+        solarGridLabel.setAlignment(Align.center, Align.center);
+        Widget solarGridWidget = new Widget(LEFT, solarGridLabel);
 
         componentArray.add(new StationComponent("Solar tracking grid (+10C per second)", 1000, 2000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.addAutoCharge(10);
-                stateManager.incrementSolarPanelCount();
+                stateManager.incrementSolarGridCount();
+                solarGridLabel.setText("[Solar grid: " + stateManager.getSolarGridCount() + "]");
             }
-        }, null));
+        }, solarGridWidget));
+
+        Label detectorLabel = new Label("[Cybernetic Detector]", widgetLabelStyle);
+        detectorLabel.setAlignment(Align.center, Align.center);
+        Widget detectorWidget = new Widget(LEFT, detectorLabel);
 
         componentArray.add(new StationComponent("Cybernetic Detector (Find Resource+)", 500, 3000, true, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.increaseResourceSpawnRate();
             }
-        }, null));
+        }, detectorWidget));
+
+        final Label miningArmLabel = new Label("[Pneumatic mining arm: 1]", widgetLabelStyle);
+        miningArmLabel.setAlignment(Align.center, Align.center);
+        Widget miningArmWidget = new Widget(LEFT, miningArmLabel);
 
         componentArray.add(new StationComponent("Pneumatic Mining Arm (x5 gather)", 2000, 10000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
                 stateManager.increaseGatherRate(5);
                 stateManager.incrementPneumaticArmCount();
+                miningArmLabel.setText("[Pneumatic mining arm: " + stateManager.getPneumaticArmCount() + "]");
             }
-        }, null));
+        }, miningArmWidget));
 
         componentArray.add(new StationComponent("Spaceship (Return to Earth)", 10000, 1000000, true, new Effect() {
             @Override
