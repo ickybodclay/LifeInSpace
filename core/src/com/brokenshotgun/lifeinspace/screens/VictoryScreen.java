@@ -54,6 +54,11 @@ public class VictoryScreen implements Screen {
         victoryLabel.setAlignment(Align.center, Align.center);
 
         ui.add(victoryLabel).center().expand().fill();
+        ui.row();
+
+        Label timePlayedLabel = new Label("Total time played is " + game.getStateManager().getTotalTimePlayed() + " seconds", labelStyle);
+        timePlayedLabel.setAlignment(Align.center, Align.center);
+        ui.add(timePlayedLabel).center().expand().fill();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();

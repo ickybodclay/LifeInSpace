@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.brokenshotgun.lifeinspace.LifeInSpaceGame;
 
 public class GameOverScreen implements Screen {
@@ -54,6 +53,11 @@ public class GameOverScreen implements Screen {
         gameOverLabel.setAlignment(Align.center, Align.center);
 
         ui.add(gameOverLabel).center().expand().fill();
+        ui.row();
+
+        Label timePlayedLabel = new Label("Total time played is " + game.getStateManager().getTotalTimePlayed() + " seconds", labelStyle);
+        timePlayedLabel.setAlignment(Align.center, Align.center);
+        ui.add(timePlayedLabel).center().expand().fill();
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();

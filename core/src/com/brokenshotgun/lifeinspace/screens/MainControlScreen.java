@@ -344,10 +344,10 @@ public class MainControlScreen implements Screen, StateListener {
         solarPanelLabel.setAlignment(Align.center, Align.center);
         Widget solarPanelWidget = new Widget(LEFT, solarPanelLabel);
 
-        componentArray.add(new StationComponent("Solar panel (+1C per second)", 10, 5, false, new Effect() {
+        componentArray.add(new StationComponent("Solar panel (+10C per second)", 100, 50, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                stateManager.addAutoCharge(1);
+                stateManager.addAutoCharge(10);
                 stateManager.incrementSolarPanelCount();
                 solarPanelLabel.setText("[Solar panel: " + stateManager.getSolarPanelCount() + "]");
             }
@@ -357,10 +357,10 @@ public class MainControlScreen implements Screen, StateListener {
         solarGridLabel.setAlignment(Align.center, Align.center);
         Widget solarGridWidget = new Widget(LEFT, solarGridLabel);
 
-        componentArray.add(new StationComponent("Solar tracking grid (+10C per second)", 1000, 2000, false, new Effect() {
+        componentArray.add(new StationComponent("Solar tracking grid (+100C per second)", 1000, 2000, false, new Effect() {
             @Override
             public void apply(StateManager stateManager) {
-                stateManager.addAutoCharge(10);
+                stateManager.addAutoCharge(100);
                 stateManager.incrementSolarGridCount();
                 solarGridLabel.setText("[Solar grid: " + stateManager.getSolarGridCount() + "]");
             }

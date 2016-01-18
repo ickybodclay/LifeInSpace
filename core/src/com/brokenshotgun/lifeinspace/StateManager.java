@@ -36,6 +36,8 @@ public class StateManager {
     private StateListener stateListener;
     private int solarGridCount;
 
+    private float totalTimePlayed = 0f;
+
     public StateManager() {
         stationComponents = new HashSet<StationComponent>();
         reset();
@@ -134,6 +136,7 @@ public class StateManager {
 
     public void update(float delta) {
         updateTime += delta;
+        totalTimePlayed += delta;
 
         if (updateTime < cycleTime) return;
 
@@ -248,6 +251,7 @@ public class StateManager {
         prefs.putInteger("charge", tmpCharge);
         prefs.putInteger("resources", tmpResources);
         prefs.putInteger("water", water);
+        prefs.putFloat("totalTimePlayed", totalTimePlayed);
         prefs.flush();
 
         Gdx.app.log("StateManager", "Saved!");
@@ -259,12 +263,14 @@ public class StateManager {
         charge = prefs.getInteger("charge", 0);
         resources = prefs.getInteger("resources", 0);
         water = prefs.getInteger("water", 10);
+        totalTimePlayed = prefs.getFloat("totalTimePlayed", 0f);
     }
 
     public void clearSave() {
         Preferences prefs = Gdx.app.getPreferences("com.brokenshotgun.marsbasesim");
         prefs.clear();
         prefs.flush();
+        totalTimePlayed = 0f;
     }
 
     public int getSolarPanelCount() {
@@ -290,5 +296,9 @@ public class StateManager {
 
     public int getRefiningLevel() {
         return refiningLevel;
+    }
+
+    public float getTotalTimePlayed() {
+        return totalTimePlayed;
     }
 }
